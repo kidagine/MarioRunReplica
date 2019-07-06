@@ -12,7 +12,7 @@ public class Mushroom : MonoBehaviour
     private Vector2 controlPoint;
     private bool isFacingRight;
     private float ratio;
-    private float runSpeed = 2.0f;
+    private float runSpeed = 1.5f;
 
 
     void Start()

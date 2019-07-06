@@ -8,6 +8,8 @@ TagManager:
   - Wall
   - PowerUp
   - Enemy
+  - Pauser
+  - Vault
   layers:
   - Default
   - TransparentFX

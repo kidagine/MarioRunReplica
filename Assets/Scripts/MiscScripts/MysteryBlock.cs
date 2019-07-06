@@ -35,8 +35,20 @@ public class MysteryBlock : MonoBehaviour
                     }
                     else
                     {
-                        FindObjectOfType<AudioManager>().Play("PowerUpAppears");
-                        StartCoroutine(ShakeUp());
+                        if (itemInside != null)
+                        {
+                            if (itemInside.name.StartsWith("Mushroom"))
+                            {
+                                FindObjectOfType<AudioManager>().Play("PowerUpAppears");
+                                StartCoroutine(ShakeUp());
+                            }
+                            else if (itemInside.name.StartsWith("Coin"))
+                            {
+                                FindObjectOfType<AudioManager>().Play("CoinPickUp");
+                                FindObjectOfType<GameManager>().increaseCoins(1);
+                                StartCoroutine(ShakeUp());
+                            }
+                        }
                     }
                 }
             }

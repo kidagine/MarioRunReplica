@@ -10,21 +10,59 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayerMask;
 
     private readonly float runSpeed = 1.75f;
-    private readonly float jumpForce = 350.0f;
+    private readonly float jumpForce = 250f;
     private readonly float hopForce = 85.0f;
+    private readonly float fallMultiplier = 2f;
+    private readonly float lowJumpMultiplier = 1.5f;
+    private float jumpTimer = 0.08f;
+    private float hitOnceTimer = 0.15f;
+    private bool isJumping;
+    private bool isHoping;
     private bool isGrounded;
-    private bool isHopping;
     private bool isPoweredUp;
+    private bool isPausered;
+    private bool hasHitOnce;
 
 
     void Update()
     {
         if (GameManager.isScrollingOn)
         {
-            Run();
-            Jump();
+            if (!isPausered)
+            {
+                Run();
+                if (!isHoping)
+                {
+                    Jump();
+                }
+            }
             CheckGround();
         }
+        else if (isPausered)
+        {
+            rb.velocity = new Vector2(0.0f, 0.0f);
+            animator.SetBool("IsRunning", false);
+            if (Input.GetMouseButtonDown(0))
+            {
+                GameManager.isScrollingOn = true;
+                isPausered = false;
+            }
+        }
+
+        if (hasHitOnce)
+        {
+            hitOnceTimer -= Time.deltaTime;
+            if (hitOnceTimer <= 0)
+            {
+                hasHitOnce = false;
+                hitOnceTimer = 0.05f;
+            }
+        }
+    }
+
+    void FixedUpdate()
+    {
+        CheckVerticalVelocity();
     }
 
     private void Run()
@@ -37,16 +75,47 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded)
         {
-            animator.SetBool("IsJumping", false);
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetMouseButtonDown(0))
             {
                 FindObjectOfType<AudioManager>().Play("Jump");
+                isJumping = true;
+                jumpTimer = 0.08f;
                 rb.AddForce(new Vector2(0.0f, jumpForce));
             }
+            animator.SetBool("IsJumping", false);
         }
         else
         {
+            if (Input.GetMouseButton(0) && isJumping)
+            {
+                if (jumpTimer >= 0)
+                {
+                    rb.AddForce(new Vector2(0.0f, 30.0f));
+                    jumpTimer -= Time.deltaTime;
+                }
+                else
+                {
+                    isJumping = false;
+                }
+            }
             animator.SetBool("IsJumping", true);
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            isJumping = false;
+        }
+
+    }
+
+    private void CheckVerticalVelocity()
+    {
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        }
+        else if (rb.velocity.y > 0 && !Input.GetKey(KeyCode.Space))
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
     }
 
@@ -72,39 +141,53 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(0.0f, 0.0f);
             }
         }
-        if (other.gameObject.CompareTag("Wall"))
+        else if (other.gameObject.CompareTag("Enemy"))
         {
             foreach (ContactPoint2D point in other.contacts)
             {
-                   
-                if (!(point.normal.y >= 0.9f))
+                if (!hasHitOnce)
                 {
-                        isHopping = true;
-                        rb.AddForce(new Vector2(0.0f, hopForce));
-                }
-            }
-        }
-        if (other.gameObject.CompareTag("Enemy"))
-        {
-            foreach (ContactPoint2D point in other.contacts)
-            {
-                if (!(point.normal.y >= 0.9f))
-                {
-                    if (isGrounded)
+                    if (!(point.normal.y >= 0.99f))
                     {
+                        rb.AddForce(new Vector2(0.0f, hopForce * 3f));
                     }
-                    isHopping = true;
-                    rb.AddForce(new Vector2(0.0f, hopForce * 1.3f));
-                }
-                else
-                {
-                    FindObjectOfType<AudioManager>().Play("Stomp");
-                    rb.AddForce(new Vector2(0.0f, hopForce * 1.2f));
-                    other.gameObject.GetComponent<Goomba>().Stomped();
+                    else
+                    {
+                        FindObjectOfType<AudioManager>().Play("Stomp");
+                        rb.AddForce(new Vector2(0.0f, hopForce * 6f));
+                        other.gameObject.GetComponent<IEnemy>().Stomped();
+                    }
+                    hasHitOnce = true;
                 }
             }
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Pauser"))
+        {
+            GameManager.isScrollingOn = false;
+            isPausered = true;
+        }
+        else if (other.gameObject.CompareTag("Vault"))
+        {
+            isHoping = true;
+            if (isGrounded)
+            {
+                rb.AddForce(new Vector2(0.0f, hopForce * 3f));
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Vault"))
+        {
+            isHoping = false;
+        }
+    }
+
 
     IEnumerator PoweringUp()
     {
