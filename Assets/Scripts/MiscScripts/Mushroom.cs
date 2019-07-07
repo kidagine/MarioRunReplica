@@ -5,7 +5,7 @@ using UnityEngine;
 public class Mushroom : MonoBehaviour
 {
 
-    [SerializeField] SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private Vector2 startingPoint;
     private Vector2 targetPoint;

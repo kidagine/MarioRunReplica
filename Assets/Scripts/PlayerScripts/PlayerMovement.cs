@@ -12,12 +12,14 @@ public class PlayerMovement : MonoBehaviour
     private readonly float runSpeed = 1.75f;
     private readonly float jumpForce = 250f;
     private readonly float hopForce = 85.0f;
-    private readonly float fallMultiplier = 2f;
-    private readonly float lowJumpMultiplier = 1.5f;
+    private readonly float lowJumpMultiplier = 1.0f;
+    private float fallMultiplier = 1.5f;
     private float jumpTimer = 0.08f;
-    private float hitOnceTimer = 0.15f;
+    private float hitOnceTimer = 0.2f;
+    private float spinJumpCooldownTimer = 0.0f;
     private bool isJumping;
     private bool isHoping;
+    private bool isAirSpinning;
     private bool isGrounded;
     private bool isPoweredUp;
     private bool isPausered;
@@ -46,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 GameManager.isScrollingOn = true;
                 isPausered = false;
+                hasHitOnce = true;
             }
         }
 
@@ -75,10 +78,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded)
         {
+            spinJumpCooldownTimer = 0f;
             if (Input.GetMouseButtonDown(0))
             {
                 FindObjectOfType<AudioManager>().Play("Jump");
                 isJumping = true;
+                isAirSpinning = false;
                 jumpTimer = 0.08f;
                 rb.AddForce(new Vector2(0.0f, jumpForce));
             }
@@ -90,13 +95,29 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (jumpTimer >= 0)
                 {
-                    rb.AddForce(new Vector2(0.0f, 30.0f));
+                    rb.AddForce(new Vector2(0.0f, 18.0f));
                     jumpTimer -= Time.deltaTime;
                 }
                 else
                 {
                     isJumping = false;
                 }
+            }
+            if (spinJumpCooldownTimer <= 0)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    FindObjectOfType<AudioManager>().Play("SpinJump");
+                    animator.SetBool("IsSpinning", true);
+                    spinJumpCooldownTimer = 0.7f;
+                    rb.constraints = RigidbodyConstraints2D.FreezePositionY;
+                    isAirSpinning = true;
+                }
+            }
+
+            if (isAirSpinning)
+            {
+                spinJumpCooldownTimer -= Time.deltaTime;
             }
             animator.SetBool("IsJumping", true);
         }
@@ -143,22 +164,22 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Enemy"))
         {
-            foreach (ContactPoint2D point in other.contacts)
+            float offset = 0.2f;
+            if (!hasHitOnce)
             {
-                if (!hasHitOnce)
+                Debug.Log("0");
+                if (transform.position.y > other.transform.position.y + offset)
                 {
-                    if (!(point.normal.y >= 0.99f))
-                    {
-                        rb.AddForce(new Vector2(0.0f, hopForce * 3f));
-                    }
-                    else
-                    {
-                        FindObjectOfType<AudioManager>().Play("Stomp");
-                        rb.AddForce(new Vector2(0.0f, hopForce * 6f));
-                        other.gameObject.GetComponent<IEnemy>().Stomped();
-                    }
-                    hasHitOnce = true;
+                    FindObjectOfType<AudioManager>().Play("Stomp");
+                    rb.AddForce(new Vector2(0.0f, hopForce * 5f));
+                    other.gameObject.GetComponent<IEnemy>().Stomped();
+                    Debug.Log("1");
                 }
+                else
+                {
+                    rb.AddForce(new Vector2(0.0f, hopForce * 3f));
+                }
+                hasHitOnce = true;
             }
         }
     }
@@ -167,8 +188,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Pauser"))
         {
-            GameManager.isScrollingOn = false;
-            isPausered = true;
+            if (!hasHitOnce)
+            {
+                GameManager.isScrollingOn = false;
+                isPausered = true;
+            }
         }
         else if (other.gameObject.CompareTag("Vault"))
         {
@@ -186,6 +210,12 @@ public class PlayerMovement : MonoBehaviour
         {
             isHoping = false;
         }
+    }
+
+    public void ResetFromSpinJump()
+    {
+        animator.SetBool("IsSpinning", false);
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation|RigidbodyConstraints2D.None;
     }
 
 

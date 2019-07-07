@@ -5,13 +5,14 @@ using UnityEngine;
 public class MysteryBlock : MonoBehaviour
 {
 
-    [SerializeField] Animator animator;
-    [SerializeField] Sprite emptyBlockSprite;
+    [SerializeField] private Animator animator;
+    [SerializeField] private Sprite emptyBlockSprite;
     [SerializeField] private bool isDestructible;
 
     private Transform itemInside;
     private Vector2 startingPosition;
     private SpriteRenderer spriteRenderer;
+    private bool isEmpty;
 
     void Start()
     {
@@ -27,26 +28,29 @@ public class MysteryBlock : MonoBehaviour
         {
             foreach (ContactPoint2D point in other.contacts)
             {
-                if (point.normal.y >=    0.9f)
+                if (point.normal.y >= 0.9f)
                 {
-                    if (isDestructible)
+                    if (!isEmpty)
                     {
-                        Destroy(gameObject);
-                    }
-                    else
-                    {
-                        if (itemInside != null)
+                        if (isDestructible)
                         {
-                            if (itemInside.name.StartsWith("Mushroom"))
+                            Destroy(gameObject);
+                        }
+                        else
+                        {
+                            if (itemInside != null)
                             {
-                                FindObjectOfType<AudioManager>().Play("PowerUpAppears");
-                                StartCoroutine(ShakeUp());
-                            }
-                            else if (itemInside.name.StartsWith("Coin"))
-                            {
-                                FindObjectOfType<AudioManager>().Play("CoinPickUp");
-                                FindObjectOfType<GameManager>().increaseCoins(1);
-                                StartCoroutine(ShakeUp());
+                                if (itemInside.name.StartsWith("Mushroom"))
+                                {
+                                    FindObjectOfType<AudioManager>().Play("PowerUpAppears");
+                                    StartCoroutine(ShakeUp());
+                                }
+                                else if (itemInside.name.StartsWith("Coin"))
+                                {
+                                    FindObjectOfType<AudioManager>().Play("CoinPickUp");
+                                    FindObjectOfType<GameManager>().increaseCoins(1);
+                                    StartCoroutine(ShakeUp());
+                                }
                             }
                         }
                     }
@@ -71,6 +75,7 @@ public class MysteryBlock : MonoBehaviour
         {
             hasReachedTop = true;
             itemInside.gameObject.SetActive(true);
+            isEmpty = true;
             StartCoroutine(ShakeDown());
         }
     }
