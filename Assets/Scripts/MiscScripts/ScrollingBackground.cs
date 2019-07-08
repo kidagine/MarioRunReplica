@@ -5,8 +5,8 @@ using UnityEngine;
 public class ScrollingBackground : MonoBehaviour
 {
 
-    [SerializeField] GameObject player;
-    [SerializeField] Material material;
+    [SerializeField] private GameObject player;
+    [SerializeField] private Material material;
 
     private Vector2 offset;
     private float speed = 0.1f;

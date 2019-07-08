@@ -5,8 +5,8 @@ using UnityEngine;
 public class ArrowCoinSpawner : MonoBehaviour
 {
 
-    [SerializeField] SpriteRenderer spriteRenderer;
-    [SerializeField] Sprite arrowCoinDisabled;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Sprite arrowCoinDisabled;
 
 
     private void OnTriggerEnter2D(Collider2D other)

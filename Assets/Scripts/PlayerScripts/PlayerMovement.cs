@@ -9,7 +9,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask groundLayerMask;
 
-    private readonly float runSpeed = 1.75f;
+    [HideInInspector] public bool IsPoweredUp;
+    private readonly float runSpeed = 2.0f;
     private readonly float jumpForce = 250f;
     private readonly float hopForce = 85.0f;
     private readonly float lowJumpMultiplier = 1.0f;
@@ -21,7 +22,6 @@ public class PlayerMovement : MonoBehaviour
     private bool isHoping;
     private bool isAirSpinning;
     private bool isGrounded;
-    private bool isPoweredUp;
     private bool isPausered;
     private bool hasHitOnce;
 
@@ -95,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (jumpTimer >= 0)
                 {
-                    rb.AddForce(new Vector2(0.0f, 18.0f));
+                    rb.AddForce(new Vector2(0.0f, 30.0f));
                     jumpTimer -= Time.deltaTime;
                 }
                 else
@@ -110,7 +110,9 @@ public class PlayerMovement : MonoBehaviour
                     FindObjectOfType<AudioManager>().Play("SpinJump");
                     animator.SetBool("IsSpinning", true);
                     spinJumpCooldownTimer = 0.7f;
-                    rb.constraints = RigidbodyConstraints2D.FreezePositionY;
+                    rb.gravityScale = 0;
+                    fallMultiplier = 0;
+                    rb.velocity = new Vector2(0, 0);
                     isAirSpinning = true;
                 }
             }
@@ -153,12 +155,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("PowerUp"))
         {
-            if (!isPoweredUp)
+            if (!IsPoweredUp)
             {
                 Time.timeScale = 0.0f;
                 StartCoroutine(PoweringUp());
                 GameManager.isScrollingOn = false;
-                isPoweredUp = true;
+                IsPoweredUp = true;
                 rb.velocity = new Vector2(0.0f, 0.0f);
             }
         }
@@ -167,13 +169,12 @@ public class PlayerMovement : MonoBehaviour
             float offset = 0.2f;
             if (!hasHitOnce)
             {
-                Debug.Log("0");
+                Debug.Log(other.gameObject.name);
                 if (transform.position.y > other.transform.position.y + offset)
                 {
                     FindObjectOfType<AudioManager>().Play("Stomp");
                     rb.AddForce(new Vector2(0.0f, hopForce * 5f));
                     other.gameObject.GetComponent<IEnemy>().Stomped();
-                    Debug.Log("1");
                 }
                 else
                 {
@@ -215,7 +216,8 @@ public class PlayerMovement : MonoBehaviour
     public void ResetFromSpinJump()
     {
         animator.SetBool("IsSpinning", false);
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation|RigidbodyConstraints2D.None;
+        rb.gravityScale = 2;
+        fallMultiplier = 1.5f;
     }
 
 

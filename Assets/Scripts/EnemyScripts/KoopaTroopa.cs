@@ -14,6 +14,15 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
     private bool canMove = true;
     private float runSpeed = 0.6f;
 
+    void Start()
+    {
+        if (isFacingRight)
+        {
+            Vector3 theScale = transform.localScale;
+            theScale.x *= -1;
+            transform.localScale = theScale;
+        }
+    }
 
     void Update()
     {
@@ -51,7 +60,14 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
         animator.SetTrigger("Spin");
         canMove = true;
         isSpinning = true;
-        runSpeed = runSpeed * 4f;
+        if (isFacingRight)
+        {
+            runSpeed = -runSpeed * 4f;
+        }
+        else
+        {
+            runSpeed = runSpeed * 4f;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D other)

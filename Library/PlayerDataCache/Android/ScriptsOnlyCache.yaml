@@ -3,16 +3,17 @@ ScriptsOnlyBuild:
     Assembly-CSharp.dll:
     - ArrowCoinSpawner
     - AudioManager
+    - Block
     - Coin
     - DestroyTime
     - GameManager
     - Goomba
     - KoopaTroopa
     - Mushroom
-    - MysteryBlock
     - Pauser
     - PlayerMovement
     - ScrollingBackground
+    - UnityEngine.UI.LetterSpacing
     Cinemachine.dll:
     - Cinemachine.CinemachineBrain
     - Cinemachine.CinemachineFramingTransposer
@@ -31,18 +32,16 @@ ScriptsOnlyBuild:
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.StateNode
     - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
-    - UnityEditor.TestTools.TestRunner.TestListCacheData
     UnityEngine.UI.dll:
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
+    - UnityEngine.UI.Outline
     - UnityEngine.UI.Text
   sceneClasses:
     Assets/Scenes/SampleScene.unity:
@@ -87,52 +86,60 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 572}
+      Script: {instanceID: 596}
     - Class: 114
-      Script: {instanceID: 10964}
+      Script: {instanceID: 10988}
     - Class: 114
-      Script: {instanceID: 10976}
+      Script: {instanceID: 11000}
     - Class: 114
-      Script: {instanceID: 11156}
+      Script: {instanceID: 11178}
     - Class: 114
-      Script: {instanceID: 11204}
+      Script: {instanceID: 11226}
     - Class: 114
-      Script: {instanceID: 11248}
+      Script: {instanceID: 11266}
     - Class: 114
-      Script: {instanceID: 11272}
+      Script: {instanceID: 11290}
     - Class: 114
-      Script: {instanceID: 11634}
+      Script: {instanceID: 11642}
     - Class: 114
-      Script: {instanceID: 11692}
+      Script: {instanceID: 11700}
     - Class: 114
-      Script: {instanceID: 11924}
+      Script: {instanceID: 11802}
     - Class: 114
-      Script: {instanceID: 11978}
+      Script: {instanceID: 11926}
     - Class: 114
-      Script: {instanceID: 12156}
+      Script: {instanceID: 11976}
     - Class: 114
-      Script: {instanceID: 12258}
+      Script: {instanceID: 12154}
     - Class: 114
-      Script: {instanceID: 12368}
+      Script: {instanceID: 12254}
     - Class: 114
-      Script: {instanceID: 12396}
+      Script: {instanceID: 12364}
     - Class: 114
-      Script: {instanceID: 12446}
+      Script: {instanceID: 12390}
     - Class: 114
-      Script: {instanceID: 12462}
+      Script: {instanceID: 12434}
     - Class: 114
-      Script: {instanceID: 12508}
+      Script: {instanceID: 12450}
     - Class: 114
-      Script: {instanceID: 12682}
+      Script: {instanceID: 12496}
     - Class: 114
-      Script: {instanceID: 13008}
+      Script: {instanceID: 12662}
     - Class: 114
-      Script: {instanceID: 13056}
+      Script: {instanceID: 12980}
+    - Class: 114
+      Script: {instanceID: 12990}
+    - Class: 114
+      Script: {instanceID: 13028}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
       Script: {instanceID: 0}
     - Class: 157
+      Script: {instanceID: 0}
+    - Class: 198
+      Script: {instanceID: 0}
+    - Class: 199
       Script: {instanceID: 0}
     - Class: 212
       Script: {instanceID: 0}
@@ -273,7 +280,7 @@ ScriptsOnlyBuild:
     className: TMP_InputField
   - hash:
       serializedVersion: 2
-      Hash: 70259225c1c05b23f580128d0637efdd
+      Hash: 85dd30757e940508f94a980d55e0b9b6
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: PlayerMovement
@@ -381,7 +388,7 @@ ScriptsOnlyBuild:
     className: NoiseSettings
   - hash:
       serializedVersion: 2
-      Hash: ca67032c05e0dc78e1412d8892b112cc
+      Hash: e16da4d682d55936052c24616460b03d
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: KoopaTroopa
@@ -435,6 +442,12 @@ ScriptsOnlyBuild:
     className: CinemachinePOV
   - hash:
       serializedVersion: 2
+      Hash: bf35eba4a677318e3c007a8ef4cba3e3
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: UnityEngine.UI
+    className: LetterSpacing
+  - hash:
+      serializedVersion: 2
       Hash: b3ab2106268377ffe25dd18ac23dca28
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
@@ -471,10 +484,10 @@ ScriptsOnlyBuild:
     className: CinemachineComposer
   - hash:
       serializedVersion: 2
-      Hash: 715109b50a482b78ef70dd723aac3fa6
+      Hash: ca033d34b8aa2a0ca120809e0b8d6d87
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
-    className: MysteryBlock
+    className: Block
   - hash:
       serializedVersion: 2
       Hash: 15882a52798c275361cd0a3ada984ec5
@@ -820,6 +833,12 @@ ScriptsOnlyBuild:
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: BreakBlockParticle
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Cinemachine.dll
     namespaceName: Cinemachine
     className: CinemachineHardLockToTarget
@@ -874,4 +893,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: C:/Users/Kiddo/Desktop/Bulbathemis Run.apk
+  playerPath: C:/Users/Kiddo/Desktop/Bulba Run.apk

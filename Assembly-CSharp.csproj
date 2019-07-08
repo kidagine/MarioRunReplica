@@ -65,11 +65,13 @@
     <Compile Include="Assets\Scripts\EnemyScripts\KoopaTroopa.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\ArrowCoinSpawner.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\AudioManager.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\Block.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\BreakBlockParticle.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Coin.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\DestroyTime.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\LetterSpacing.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Mushroom.cs" />
-    <Compile Include="Assets\Scripts\MiscScripts\MysteryBlock.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Pauser.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\ScrollingBackground.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Sounds.cs" />
@@ -91,12 +93,6 @@
     </Reference>
     <Reference Include="Unity.Timeline">
       <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Sprite.Editor">
       <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>

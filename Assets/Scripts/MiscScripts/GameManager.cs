@@ -6,11 +6,11 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
 
-    [SerializeField] Animator cameraAnimator;
-    [SerializeField] GameObject circleMask;
-    [SerializeField] GameObject blackPanel;
-    [SerializeField] GameObject introStageText;
-    [SerializeField] Text coinsText;
+    [SerializeField] private Animator cameraAnimator;
+    [SerializeField] private GameObject circleMask;
+    [SerializeField] private GameObject blackPanel;
+    [SerializeField] private GameObject introStageText;
+    [SerializeField] private Text coinsText;
 
     public static bool isScrollingOn;
 
