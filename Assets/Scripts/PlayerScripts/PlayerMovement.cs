@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
 
-    [SerializeField] private Rigidbody2D rb;
+    public Rigidbody2D rb;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask groundLayerMask;
 
@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private float jumpTimer = 0.08f;
     private float hitOnceTimer = 0.2f;
     private float spinJumpCooldownTimer = 0.0f;
+    private int killStreak;
     private bool isJumping;
     private bool isHoping;
     private bool isAirSpinning;
@@ -87,6 +88,8 @@ public class PlayerMovement : MonoBehaviour
                 jumpTimer = 0.08f;
                 rb.AddForce(new Vector2(0.0f, jumpForce));
             }
+
+            killStreak = 0;
             animator.SetBool("IsJumping", false);
         }
         else
@@ -116,11 +119,11 @@ public class PlayerMovement : MonoBehaviour
                     isAirSpinning = true;
                 }
             }
-
             if (isAirSpinning)
             {
                 spinJumpCooldownTimer -= Time.deltaTime;
             }
+
             animator.SetBool("IsJumping", true);
         }
         if (Input.GetMouseButtonUp(0))
@@ -169,12 +172,13 @@ public class PlayerMovement : MonoBehaviour
             float offset = 0.2f;
             if (!hasHitOnce)
             {
-                Debug.Log(other.gameObject.name);
                 if (transform.position.y > other.transform.position.y + offset)
                 {
                     FindObjectOfType<AudioManager>().Play("Stomp");
                     rb.AddForce(new Vector2(0.0f, hopForce * 5f));
-                    other.gameObject.GetComponent<IEnemy>().Stomped();
+
+                    killStreak++;
+                    other.gameObject.GetComponent<IEnemy>().Stomped(killStreak);
                 }
                 else
                 {
@@ -219,7 +223,6 @@ public class PlayerMovement : MonoBehaviour
         rb.gravityScale = 2;
         fallMultiplier = 1.5f;
     }
-
 
     IEnumerator PoweringUp()
     {

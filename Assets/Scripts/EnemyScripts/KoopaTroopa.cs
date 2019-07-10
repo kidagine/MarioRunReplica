@@ -9,10 +9,12 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
     [SerializeField] private GameObject ImpactEffectPrefab;
     [SerializeField] private bool isFacingRight;
 
+
+    private float runSpeed = 0.6f;
+    private int killStreak;
     private bool isSpinning;
     private bool isInsideMainCamera;
     private bool canMove = true;
-    private float runSpeed = 0.6f;
 
     void Start()
     {
@@ -44,7 +46,7 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
         }
     }
 
-    public void Stomped()
+    public void Stomped(int killStreak)
     {
         if (!isSpinning)
         {
@@ -84,7 +86,9 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
             if (isSpinning)
             {
                 FindObjectOfType<AudioManager>().Play("Stomp");
-                other.gameObject.GetComponent<Goomba>().Hit();
+
+                killStreak++;
+                other.gameObject.GetComponent<Goomba>().Hit(killStreak);
             }
         }
     }

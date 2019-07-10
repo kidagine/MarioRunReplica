@@ -6,7 +6,11 @@ public class Goomba : MonoBehaviour, IEnemy
 {
 
     [SerializeField] private Animator animator;
-    [SerializeField] private GameObject ImpactEffectPrefab;
+    [SerializeField] private GameObject impactEffectPrefab;
+    [SerializeField] private GameObject coin1UpPrefab;
+    [SerializeField] private GameObject coin2UpPrefab;
+    [SerializeField] private GameObject coin4UpPrefab;
+
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
@@ -42,18 +46,20 @@ public class Goomba : MonoBehaviour, IEnemy
         }
     }
 
-    public void Stomped()
+    public void Stomped(int killStreak)
     {
         animator.SetTrigger("Stomped");
-        Instantiate(ImpactEffectPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
+        HandleKillStreak(killStreak, 0);
+        Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
         canMove = false;
         transform.Translate(Vector2.right * 0.0f);
-        Destroy(gameObject, 0.15f);
+        Destroy(gameObject, 0.3f);
     }
 
-    public void Hit()
+    public void Hit(int killStreak)
     {
-        Instantiate(ImpactEffectPrefab, new Vector2(transform.position.x, transform.position.y), Quaternion.identity);
+        HandleKillStreak(0, killStreak);
+        Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y), Quaternion.identity);
         rb.gravityScale = 0.0f;
         boxCollider.enabled = false;
         Vector2 startingPoint = new Vector2(transform.position.x, transform.position.y);
@@ -89,6 +95,41 @@ public class Goomba : MonoBehaviour, IEnemy
                 isDestroyed = true;
                 Destroy(gameObject);
             }
+        }
+    }
+
+    private void HandleKillStreak(int playerKillStreak, int KoopaTroopaKillStreak)
+    {
+        if (playerKillStreak == 1)
+        {
+            Instantiate(coin1UpPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
+            FindObjectOfType<GameManager>().IncrementCoins(1);
+        }
+        else if (playerKillStreak == 2)
+        {
+            Instantiate(coin2UpPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
+            FindObjectOfType<GameManager>().IncrementCoins(2);
+        }
+        else if (playerKillStreak >= 3)
+        {
+            Instantiate(coin4UpPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
+            FindObjectOfType<GameManager>().IncrementCoins(3);
+        }
+
+        if (KoopaTroopaKillStreak == 1)
+        {
+            Instantiate(coin1UpPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
+            FindObjectOfType<GameManager>().IncrementCoins(1);
+        }
+        else if (KoopaTroopaKillStreak == 2)
+        {
+            Instantiate(coin2UpPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
+            FindObjectOfType<GameManager>().IncrementCoins(2);
+        }
+        else if (KoopaTroopaKillStreak >= 3)
+        {
+            Instantiate(coin4UpPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
+            FindObjectOfType<GameManager>().IncrementCoins(3);
         }
     }
 

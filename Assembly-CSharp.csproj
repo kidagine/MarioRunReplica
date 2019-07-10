@@ -67,12 +67,16 @@
     <Compile Include="Assets\Scripts\MiscScripts\AudioManager.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Block.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\BreakBlockParticle.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\ClockTimer.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Coin.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\Coin1Up.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\DestroyTime.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\IntroSceneHandler.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\LetterSpacing.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Mushroom.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Pauser.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\PurpleCoin.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\ScrollingBackground.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Sounds.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />

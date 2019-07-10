@@ -6,19 +6,28 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
 
-    [SerializeField] private Animator cameraAnimator;
+    [SerializeField] private GameObject pause;
     [SerializeField] private GameObject circleMask;
     [SerializeField] private GameObject blackPanel;
     [SerializeField] private GameObject introStageText;
+    [SerializeField] private GameObject playerUI;
+    [SerializeField] private GameObject cmvIngameCam;
+    [SerializeField] private GameObject introStageCin;
     [SerializeField] private Text coinsText;
 
     public static bool isScrollingOn;
 
     private bool isStartingCutsceneFinished;
-    private float cooldownStart = 0.5f;
-    private float cooldownPlayerRun = 0.7f;
+    private bool hasCircleMaskReachedMaxScale;
+    private float cooldownStart = 2.0f;
+    private float cooldownPlayerRun = 3.0f;
     private int coinsAmount;
 
+    
+    void Awake()
+    {
+        introStageCin.SetActive(true);
+    }
 
     void Update()
     {
@@ -27,10 +36,13 @@ public class GameManager : MonoBehaviour
             if (cooldownStart <= 0)
             {
                 StartCoroutine(ScaleCircle());
-                if (cooldownPlayerRun <= 0)
+                if (hasCircleMaskReachedMaxScale)
                 {
+                    FindObjectOfType<AudioManager>().Play("FirstStageBGM");
+                    playerUI.SetActive(true);
                     isScrollingOn = true;
                     isStartingCutsceneFinished = true;
+                    cmvIngameCam.SetActive(false);
                 }
                 cooldownPlayerRun -= Time.deltaTime;
             }
@@ -40,22 +52,20 @@ public class GameManager : MonoBehaviour
 
     IEnumerator ScaleCircle()
     {
-        bool hasReachedMaxScale = false;
         float ratio = 0.0f;
         Vector2 startingScale = new Vector2(0.0f, 0.0f);
         Vector2 targetScale = new Vector2(50.0f, 50.0f);
-        while (!hasReachedMaxScale)
+        while (!hasCircleMaskReachedMaxScale)
         {
             if (ratio <= 1.0f)
             {
                 circleMask.transform.localScale = Vector2.Lerp(startingScale, targetScale, ratio);
-                ratio += 0.5f * Time.deltaTime;
+                ratio += 2.0f * Time.deltaTime;
                 yield return null;
             }
             else
             {
-                hasReachedMaxScale = true;
-                cameraAnimator.SetTrigger("ZoomOut");
+                hasCircleMaskReachedMaxScale = true;
                 Destroy(blackPanel);
                 Destroy(introStageText);
                 yield return null;
@@ -63,10 +73,24 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void increaseCoins(int amount)
+    public void IncrementCoins(int amount)
     {
         coinsAmount += amount;
         coinsText.text = coinsAmount.ToString();
+    }
+
+    public void Pause()
+    {
+        Time.timeScale = 0.0f;
+        AudioListener.pause = true;
+        pause.SetActive(true);
+    }
+
+    public void Resume()
+    {
+        Time.timeScale = 1.0f;
+        AudioListener.pause = false;
+        pause.SetActive(false);
     }
 
 

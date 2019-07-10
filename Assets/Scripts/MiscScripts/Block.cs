@@ -61,7 +61,7 @@ public class Block : MonoBehaviour
                                 else if (itemInside.name.StartsWith("Coin"))
                                 {
                                     FindObjectOfType<AudioManager>().Play("CoinPickUp");
-                                    FindObjectOfType<GameManager>().increaseCoins(1);
+                                    FindObjectOfType<GameManager>().IncrementCoins(1);
                                     StartCoroutine(ShakeUp());
                                 }
                             }
