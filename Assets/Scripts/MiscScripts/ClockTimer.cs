@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ClockTimer : MonoBehaviour
 {
 
+    [SerializeField] Animator animator;
     [SerializeField] Text timerText;
 
     private int timer = 60;
@@ -16,13 +17,34 @@ public class ClockTimer : MonoBehaviour
         StartCoroutine(TimerCountdown());
     }
 
+    void Update()
+    {
+        if (GameManager.isPausered)
+        {
+            animator.SetBool("FadeIn", false);
+            animator.SetBool("FadeOut", true);
+        }
+        else
+        {
+            animator.SetBool("FadeOut", false);
+            animator.SetBool("FadeIn", true);
+        }
+    }
+
     IEnumerator TimerCountdown()
     {
         while (timer > 0)
         {
-            timer--;
-            timerText.text = timer.ToString();
-            yield return new WaitForSeconds(1);
+            if (!GameManager.isPausered)
+            {
+                timer--;
+                timerText.text = timer.ToString();
+                yield return new WaitForSeconds(1);
+            }
+            else
+            {
+                yield return null;
+            }
         }
     }
 

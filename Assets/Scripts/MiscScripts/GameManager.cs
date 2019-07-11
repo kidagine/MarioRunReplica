@@ -1,12 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
 
     [SerializeField] private GameObject pause;
+    [SerializeField] private GameObject restartMenu;
+    [SerializeField] private GameObject quitMenu;
+    [SerializeField] private GameObject runUI;
     [SerializeField] private GameObject circleMask;
     [SerializeField] private GameObject blackPanel;
     [SerializeField] private GameObject introStageText;
@@ -16,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Text coinsText;
 
     public static bool isScrollingOn;
+    public static bool isPausered;
 
     private bool isStartingCutsceneFinished;
     private bool hasCircleMaskReachedMaxScale;
@@ -60,7 +65,7 @@ public class GameManager : MonoBehaviour
             if (ratio <= 1.0f)
             {
                 circleMask.transform.localScale = Vector2.Lerp(startingScale, targetScale, ratio);
-                ratio += 2.0f * Time.deltaTime;
+                ratio += 1.5f * Time.deltaTime;
                 yield return null;
             }
             else
@@ -81,17 +86,57 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
+        FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+        FindObjectOfType<AudioManager>().Play("Pause");
         Time.timeScale = 0.0f;
-        AudioListener.pause = true;
+        runUI.SetActive(false);
         pause.SetActive(true);
     }
 
     public void Resume()
     {
-        Time.timeScale = 1.0f;
-        AudioListener.pause = false;
-        pause.SetActive(false);
+        StartCoroutine(ResumeTimer());
     }
 
+    IEnumerator ResumeTimer()
+    {
+        FindObjectOfType<AudioManager>().Play("Pause");
+        pause.SetActive(false);
+        runUI.SetActive(true);
+        yield return new WaitForSecondsRealtime(0.55f);
+        FindObjectOfType<AudioManager>().UnPause("FirstStageBGM");
+        Time.timeScale = 1.0f;
+    }
+
+    public void Restart()
+    {
+        FindObjectOfType<AudioManager>().Play("Click");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Quit()
+    {
+        FindObjectOfType<AudioManager>().Play("Click");
+        Application.Quit();
+    }
+
+    public void ShowPauseMenu()
+    {
+        FindObjectOfType<AudioManager>().Play("Click");
+        restartMenu.SetActive(false);
+        quitMenu.SetActive(false);
+    }
+
+    public void ShowRetryMenu()
+    {
+        FindObjectOfType<AudioManager>().Play("Click");
+        restartMenu.SetActive(true);
+    }
+
+    public void ShowQuitMenu()
+    {
+        FindObjectOfType<AudioManager>().Play("Click");
+        quitMenu.SetActive(true);
+    }
 
 }

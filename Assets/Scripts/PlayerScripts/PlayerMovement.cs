@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -23,7 +24,6 @@ public class PlayerMovement : MonoBehaviour
     private bool isHoping;
     private bool isAirSpinning;
     private bool isGrounded;
-    private bool isPausered;
     private bool hasHitOnce;
 
 
@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (GameManager.isScrollingOn)
         {
-            if (!isPausered)
+            if (!GameManager.isPausered)
             {
                 Run();
                 if (!isHoping)
@@ -41,14 +41,14 @@ public class PlayerMovement : MonoBehaviour
             }
             CheckGround();
         }
-        else if (isPausered)
+        else if (GameManager.isPausered)
         {
             rb.velocity = new Vector2(0.0f, 0.0f);
             animator.SetBool("IsRunning", false);
             if (Input.GetMouseButtonDown(0))
             {
                 GameManager.isScrollingOn = true;
-                isPausered = false;
+                GameManager.isPausered = false;
                 hasHitOnce = true;
             }
         }
@@ -77,58 +77,61 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (isGrounded)
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            spinJumpCooldownTimer = 0f;
-            if (Input.GetMouseButtonDown(0))
+            if (isGrounded)
             {
-                FindObjectOfType<AudioManager>().Play("Jump");
-                isJumping = true;
-                isAirSpinning = false;
-                jumpTimer = 0.08f;
-                rb.AddForce(new Vector2(0.0f, jumpForce));
-            }
-
-            killStreak = 0;
-            animator.SetBool("IsJumping", false);
-        }
-        else
-        {
-            if (Input.GetMouseButton(0) && isJumping)
-            {
-                if (jumpTimer >= 0)
-                {
-                    rb.AddForce(new Vector2(0.0f, 30.0f));
-                    jumpTimer -= Time.deltaTime;
-                }
-                else
-                {
-                    isJumping = false;
-                }
-            }
-            if (spinJumpCooldownTimer <= 0)
-            {
+                spinJumpCooldownTimer = 0f;
                 if (Input.GetMouseButtonDown(0))
                 {
-                    FindObjectOfType<AudioManager>().Play("SpinJump");
-                    animator.SetBool("IsSpinning", true);
-                    spinJumpCooldownTimer = 0.7f;
-                    rb.gravityScale = 0;
-                    fallMultiplier = 0;
-                    rb.velocity = new Vector2(0, 0);
-                    isAirSpinning = true;
+                    FindObjectOfType<AudioManager>().Play("Jump");
+                    isJumping = true;
+                    isAirSpinning = false;
+                    jumpTimer = 0.08f;
+                    rb.AddForce(new Vector2(0.0f, jumpForce));
                 }
-            }
-            if (isAirSpinning)
-            {
-                spinJumpCooldownTimer -= Time.deltaTime;
-            }
 
-            animator.SetBool("IsJumping", true);
-        }
-        if (Input.GetMouseButtonUp(0))
-        {
-            isJumping = false;
+                killStreak = 0;
+                animator.SetBool("IsJumping", false);
+            }
+            else
+            {
+                if (Input.GetMouseButton(0) && isJumping)
+                {
+                    if (jumpTimer >= 0)
+                    {
+                        rb.AddForce(new Vector2(0.0f, 30.0f));
+                        jumpTimer -= Time.deltaTime;
+                    }
+                    else
+                    {
+                        isJumping = false;
+                    }
+                }
+                if (spinJumpCooldownTimer <= 0)
+                {
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        FindObjectOfType<AudioManager>().Play("SpinJump");
+                        animator.SetBool("IsSpinning", true);
+                        spinJumpCooldownTimer = 0.7f;
+                        rb.gravityScale = 0;
+                        fallMultiplier = 0;
+                        rb.velocity = new Vector2(0, 0);
+                        isAirSpinning = true;
+                    }
+                }
+                if (isAirSpinning)
+                {
+                    spinJumpCooldownTimer -= Time.deltaTime;
+                }
+
+                animator.SetBool("IsJumping", true);
+            }
+            if (Input.GetMouseButtonUp(0))
+            {
+                isJumping = false;
+            }
         }
 
     }
@@ -196,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
             if (!hasHitOnce)
             {
                 GameManager.isScrollingOn = false;
-                isPausered = true;
+                GameManager.isPausered = true;
             }
         }
         else if (other.gameObject.CompareTag("Vault"))
@@ -206,6 +209,10 @@ public class PlayerMovement : MonoBehaviour
             {
                 rb.AddForce(new Vector2(0.0f, hopForce * 3f));
             }
+        }
+        else if (other.gameObject.CompareTag("Death"))
+        {
+            FindObjectOfType<AudioManager>().Play("Death");
         }
     }
 

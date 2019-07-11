@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - Pauser
   - Vault
+  - Death
   layers:
   - Default
   - TransparentFX
