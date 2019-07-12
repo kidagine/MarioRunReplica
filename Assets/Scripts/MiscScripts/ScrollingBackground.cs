@@ -15,9 +15,12 @@ public class ScrollingBackground : MonoBehaviour
 
     void Update()
     {
-        offset = new Vector2(playerMovement.rb.velocity.x / 20, 0.0f);
-        transform.position = new Vector2(player.transform.position.x + 0.5f, transform.position.y);
-        material.mainTextureOffset += offset * Time.deltaTime;      
+        if (playerMovement.rb != null)
+        {
+            offset = new Vector2(playerMovement.rb.velocity.x / 20, 0.0f);
+            transform.position = new Vector2(player.transform.position.x + 0.5f, transform.position.y);
+            material.mainTextureOffset += offset * Time.deltaTime;
+        }
     }
 
 }

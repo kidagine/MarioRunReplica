@@ -71,6 +71,7 @@
     <Compile Include="Assets\Scripts\MiscScripts\Coin.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Coin1Up.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\DestroyTime.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\Flagpole.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\IntroSceneHandler.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\LetterSpacing.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Assets\Scripts\MiscScripts\PurpleCoin.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\ScrollingBackground.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Sounds.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\PlayerAnimationEventHandler.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>

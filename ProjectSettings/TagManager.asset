@@ -11,6 +11,7 @@ TagManager:
   - Pauser
   - Vault
   - Death
+  - Flagpole
   layers:
   - Default
   - TransparentFX

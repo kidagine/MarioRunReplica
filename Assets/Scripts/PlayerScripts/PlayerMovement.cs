@@ -210,9 +210,18 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(new Vector2(0.0f, hopForce * 3f));
             }
         }
+        else if (other.gameObject.CompareTag("Flagpole"))
+        {
+            FindObjectOfType<AudioManager>().Play("Win");
+            FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+            animator.SetTrigger("FlagWon");
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+            transform.position = new Vector2(other.transform.position.x + 0.2f, transform.position.y);
+        }
         else if (other.gameObject.CompareTag("Death"))
         {
             FindObjectOfType<AudioManager>().Play("Death");
+            Destroy(gameObject);
         }
     }
 

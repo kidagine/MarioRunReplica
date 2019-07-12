@@ -5,8 +5,8 @@ using UnityEngine;
 public class Coin1Up : MonoBehaviour
 {
 
-    private readonly float speed = 0.03f;
-    private float coinTimer = 0.6f;
+    private readonly float speed = 0.04f;
+    private float coinTimer = 0.8f;
 
 
     void Update()
