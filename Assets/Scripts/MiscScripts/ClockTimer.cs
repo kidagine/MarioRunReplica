@@ -35,7 +35,7 @@ public class ClockTimer : MonoBehaviour
     {
         while (timer > 0)
         {
-            if (!GameManager.isPausered)
+            if (!GameManager.isPausered && !GameManager.hasWon)
             {
                 timer--;
                 timerText.text = timer.ToString();

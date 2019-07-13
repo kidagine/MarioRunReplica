@@ -13,14 +13,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject runUI;
     [SerializeField] private GameObject circleMask;
     [SerializeField] private GameObject blackPanel;
+    [SerializeField] private GameObject whitePanel;
+    [SerializeField] private GameObject whiteCircleMask;
     [SerializeField] private GameObject introStageText;
+    [SerializeField] private GameObject endStageText;
     [SerializeField] private GameObject playerUI;
     [SerializeField] private GameObject cmvIngameCam;
     [SerializeField] private GameObject introStageCin;
+    [SerializeField] private GameObject endStageCin;
     [SerializeField] private Text coinsText;
 
     public static bool isScrollingOn;
     public static bool isPausered;
+    public static bool hasWon;
 
     private bool isStartingCutsceneFinished;
     private bool hasCircleMaskReachedMaxScale;
@@ -40,7 +45,7 @@ public class GameManager : MonoBehaviour
         {
             if (cooldownStart <= 0)
             {
-                StartCoroutine(ScaleCircle());
+                StartCoroutine(ScaleUpCircle());
                 if (hasCircleMaskReachedMaxScale)
                 {
                     FindObjectOfType<AudioManager>().Play("FirstStageBGM");
@@ -55,7 +60,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator ScaleCircle()
+    IEnumerator ScaleUpCircle()
     {
         float ratio = 0.0f;
         Vector2 startingScale = new Vector2(0.0f, 0.0f);
@@ -82,6 +87,45 @@ public class GameManager : MonoBehaviour
     {
         coinsAmount += amount;
         coinsText.text = coinsAmount.ToString();
+    }
+
+    public void EndStageCamera()
+    {
+        endStageCin.SetActive(true);
+    }
+
+    public void CourseCompleted()
+    {
+        endStageText.SetActive(true);
+    }
+
+    public void StartScaleDownCircle()
+    {
+        whitePanel.SetActive(true);
+        whiteCircleMask.SetActive(true);
+        StartCoroutine(ScaleDownCircle());
+    }
+
+    IEnumerator ScaleDownCircle()
+    {
+        float ratio = 0.0f;
+        Vector2 startingScale = new Vector2(50.0f, 50.0f);
+        Vector2 targetScale = new Vector2(0.0f, 0.0f);
+        bool hasWhiteCircleMaskReachedMaxScale = false;
+        while (!hasWhiteCircleMaskReachedMaxScale)
+        {
+            if (ratio <= 1.0f)
+            {
+                whiteCircleMask.transform.localScale = Vector2.Lerp(startingScale, targetScale, ratio);
+                ratio += 1.5f * Time.deltaTime;
+                yield return null;
+            }
+            else
+            {
+                hasWhiteCircleMaskReachedMaxScale = true;
+                yield return null;
+            }
+        }
     }
 
     public void Pause()

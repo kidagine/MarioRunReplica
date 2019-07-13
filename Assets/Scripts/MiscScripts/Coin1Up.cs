@@ -5,9 +5,9 @@ using UnityEngine;
 public class Coin1Up : MonoBehaviour
 {
 
-    private readonly float speed = 0.04f;
-    private float coinTimer = 0.8f;
-
+    private readonly float speed = 0.03f;
+    private float coinTimer = 0.5f;
+    private bool isFlagCoin;
 
     void Update()
     {
@@ -21,9 +21,17 @@ public class Coin1Up : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            if (!isFlagCoin)
+            {
+                Destroy(gameObject);
+            }
         }
         coinTimer -= Time.deltaTime;
+    }
+
+    public void SetFlagCoin(bool value)
+    {
+        isFlagCoin = value;
     }
 
 }

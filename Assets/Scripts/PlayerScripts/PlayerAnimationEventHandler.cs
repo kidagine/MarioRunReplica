@@ -6,11 +6,32 @@ public class PlayerAnimationEventHandler : MonoBehaviour
 {
 
     [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField] private Flagpole flagPole;
 
     
     public void TriggerResetFromSpinJump()
     {
         playerMovement.ResetFromSpinJump();
+    }
+
+    public void TriggerSwapFlags()
+    {
+        flagPole.SwapFlags();
+    }
+
+    public void TriggerEndStageCamera()
+    {
+        FindObjectOfType<GameManager>().EndStageCamera();
+    }
+
+    public void TriggerCourseCompleted()
+    {
+        FindObjectOfType<GameManager>().CourseCompleted();
+    }
+
+    public void TriggerStartScaleDownCircle()
+    {
+        FindObjectOfType<GameManager>().StartScaleDownCircle();
     }
 
 }

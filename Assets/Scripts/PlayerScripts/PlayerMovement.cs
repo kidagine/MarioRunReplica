@@ -214,7 +214,8 @@ public class PlayerMovement : MonoBehaviour
         {
             FindObjectOfType<AudioManager>().Play("Win");
             FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
-            animator.SetTrigger("FlagWon");
+            FindObjectOfType<AudioManager>().Pause("Jump");
+            animator.SetTrigger("Flag");
             rb.constraints = RigidbodyConstraints2D.FreezeAll;
             transform.position = new Vector2(other.transform.position.x + 0.2f, transform.position.y);
         }
