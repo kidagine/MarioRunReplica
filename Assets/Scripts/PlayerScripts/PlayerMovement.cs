@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public bool IsPoweredUp;
     private readonly float runSpeed = 2.0f;
-    private readonly float jumpForce = 250f;
+    private readonly float jumpForce = 200f;
     private readonly float hopForce = 85.0f;
     private readonly float lowJumpMultiplier = 1.0f;
     private float fallMultiplier = 1.5f;
@@ -25,6 +25,8 @@ public class PlayerMovement : MonoBehaviour
     private bool isAirSpinning;
     private bool isGrounded;
     private bool hasHitOnce;
+    private bool isWallSliding;
+    private bool isWallSlidingOnRight;
 
 
     void Update()
@@ -33,7 +35,8 @@ public class PlayerMovement : MonoBehaviour
         {
             if (!GameManager.isPausered)
             {
-                Run();
+                if (!GameManager.hasWon)
+                    Run();
                 if (!isHoping)
                 {
                     Jump();
@@ -79,54 +82,68 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            if (isGrounded)
+            if (!isWallSliding)
             {
-                spinJumpCooldownTimer = 0f;
-                if (Input.GetMouseButtonDown(0))
+                if (isGrounded)
                 {
-                    FindObjectOfType<AudioManager>().Play("Jump");
-                    isJumping = true;
-                    isAirSpinning = false;
-                    jumpTimer = 0.08f;
-                    rb.AddForce(new Vector2(0.0f, jumpForce));
-                }
+                    spinJumpCooldownTimer = 0f;
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        FindObjectOfType<AudioManager>().Play("Jump");
+                        isJumping = true;
+                        isAirSpinning = false;
+                        jumpTimer = 0.08f;
+                        rb.AddForce(new Vector2(0.0f, jumpForce));
+                    }
 
-                killStreak = 0;
-                animator.SetBool("IsJumping", false);
+                    killStreak = 0;
+                    animator.SetBool("IsJumping", false);
+                }
+                else
+                {
+                    if (Input.GetMouseButton(0) && isJumping)
+                    {
+                        if (jumpTimer >= 0)
+                        {
+                            rb.AddForce(new Vector2(0.0f, 30.0f));
+                            jumpTimer -= Time.deltaTime;
+                        }
+                        else
+                        {
+                            isJumping = false;
+                        }
+                    }
+                    if (spinJumpCooldownTimer <= 0)
+                    {
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            FindObjectOfType<AudioManager>().Play("SpinJump");
+                            animator.SetBool("IsSpinning", true);
+                            spinJumpCooldownTimer = 0.7f;
+                            rb.gravityScale = 0;
+                            fallMultiplier = 0;
+                            rb.velocity = new Vector2(0, 0);
+                            isAirSpinning = true;
+                        }
+                    }
+                    if (isAirSpinning)
+                    {
+                        spinJumpCooldownTimer -= Time.deltaTime;
+                    }
+
+                    animator.SetBool("IsJumping", true);
+                }
             }
             else
             {
-                if (Input.GetMouseButton(0) && isJumping)
+                if (isWallSlidingOnRight)
                 {
-                    if (jumpTimer >= 0)
-                    {
-                        rb.AddForce(new Vector2(0.0f, 30.0f));
-                        jumpTimer -= Time.deltaTime;
-                    }
-                    else
-                    {
-                        isJumping = false;
-                    }
-                }
-                if (spinJumpCooldownTimer <= 0)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        FindObjectOfType<AudioManager>().Play("SpinJump");
-                        animator.SetBool("IsSpinning", true);
-                        spinJumpCooldownTimer = 0.7f;
-                        rb.gravityScale = 0;
-                        fallMultiplier = 0;
-                        rb.velocity = new Vector2(0, 0);
-                        isAirSpinning = true;
-                    }
-                }
-                if (isAirSpinning)
-                {
-                    spinJumpCooldownTimer -= Time.deltaTime;
-                }
 
-                animator.SetBool("IsJumping", true);
+                }
+                else
+                {
+
+                }
             }
             if (Input.GetMouseButtonUp(0))
             {
@@ -150,7 +167,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckGround()
     {
-        Vector2 boxPosition = new Vector2(transform.position.x, transform.position.y-0.3f);
+        Vector2 boxPosition = new Vector2(transform.position.x, transform.position.y - 0.3f);
         Vector2 boxSize = new Vector2(0.2f, 0.2f);
         float boxAngle = 0.0f;
 
@@ -190,6 +207,37 @@ public class PlayerMovement : MonoBehaviour
                 hasHitOnce = true;
             }
         }
+        else if (other.gameObject.CompareTag("Wall"))
+        {
+            GameManager.isScrollingOn = false;
+            GameManager.isPausered = true;
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Wall"))
+        {
+            if (rb.velocity.y < -0.1)
+            {
+                animator.SetBool("IsWallSliding", true);
+                isWallSliding = true;
+                rb.velocity = new Vector2(0, -0.1f);
+                if ((transform.position.x - other.transform.position.x) < 0)
+                {
+
+                }
+                else if ((transform.position.x - other.transform.position.x) > 0)
+                {
+
+                }
+            }
+            else
+            {
+                animator.SetBool("IsWallSliding", false);
+                isWallSliding = false;
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -211,17 +259,20 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         else if (other.gameObject.CompareTag("Flagpole"))
-        {
+        {   
             FindObjectOfType<AudioManager>().Play("Win");
             FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
             FindObjectOfType<AudioManager>().Pause("Jump");
             animator.SetTrigger("Flag");
-            rb.constraints = RigidbodyConstraints2D.FreezeAll;
-            transform.position = new Vector2(other.transform.position.x + 0.2f, transform.position.y);
+            rb.gravityScale = 0;
+            fallMultiplier = 0;
+            rb.velocity = new Vector2(0, 0);
+            GameManager.hasWon = true;
+            transform.position = new Vector2(transform.position.x + 0.17f, transform.position.y);
         }
         else if (other.gameObject.CompareTag("Death"))
         {
-            FindObjectOfType<AudioManager>().Play("Death");
+            FindObjectOfType<GameManager>().GameOver();
             Destroy(gameObject);
         }
     }
@@ -232,6 +283,11 @@ public class PlayerMovement : MonoBehaviour
         {
             isHoping = false;
         }
+        else if (other.gameObject.CompareTag("Wall"))
+        {
+            animator.SetBool("IsWallSliding", false);
+            isWallSliding = false;
+        }
     }
 
     public void ResetFromSpinJump()
@@ -239,6 +295,11 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("IsSpinning", false);
         rb.gravityScale = 2;
         fallMultiplier = 1.5f;
+    }
+
+    public void CinematicPosition(float xValue, float yValue)
+    {
+        transform.position = new Vector2(transform.position.x + xValue, transform.position.y + yValue);
     }
 
     IEnumerator PoweringUp()

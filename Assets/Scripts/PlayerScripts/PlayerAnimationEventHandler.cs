@@ -21,6 +21,7 @@ public class PlayerAnimationEventHandler : MonoBehaviour
 
     public void TriggerEndStageCamera()
     {
+        playerMovement.CinematicPosition(0.0f, -0.052f);
         FindObjectOfType<GameManager>().EndStageCamera();
     }
 

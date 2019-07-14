@@ -6,6 +6,7 @@ public class Flagpole : MonoBehaviour
 {
 
     [SerializeField] private Animator playerAnimator;
+    [SerializeField] private GameObject smoke;
     [SerializeField] private GameObject flagTop;
     [SerializeField] private GameObject flagBottom;
     [SerializeField] private GameObject bowserFlag;
@@ -105,13 +106,16 @@ public class Flagpole : MonoBehaviour
     public void SwapFlags()
     {
         bulbaFlag.SetActive(true);
+        Instantiate(smoke, bulbaFlag.transform.position, Quaternion.identity);
         Destroy(coin1Up);
         StartCoroutine(MoveFlags());
+        StartCoroutine(PlayerSlideDown());
     }
 
     IEnumerator MoveFlags()
     {
         float ratio = 0.0f;
+        float bulbaFlagTargetPosition = 0.0f;
         bool haveFlagsSwapped = false;
         Vector2 bowserFlagPosition = bowserFlag.transform.position;
         Vector2 bulbaFlagPosition = bulbaFlag.transform.position;
@@ -119,14 +123,25 @@ public class Flagpole : MonoBehaviour
         {
             if (ratio <= 1.0f)
             {
-                bulbaFlag.transform.position = Vector2.Lerp(bulbaFlagPosition, new Vector2(bulbaFlag.transform.position.x, playerTouchFlagPosition.y), ratio);
+                if (playerTouchFlagPosition.y < flagBottom.transform.position.y + 0.3f)
+                {
+                    bulbaFlagTargetPosition = flagBottom.transform.position.y + 0.3f;
+                }
+                else if (playerTouchFlagPosition.y > flagTop.transform.position.y)
+                {
+                    bulbaFlagTargetPosition = flagTop   .transform.position.y + 0.3f;
+                }
+                else
+                {
+                    bulbaFlagTargetPosition = playerTouchFlagPosition.y;
+                }
+                bulbaFlag.transform.position = Vector2.Lerp(bulbaFlagPosition, new Vector2(bulbaFlag.transform.position.x, bulbaFlagTargetPosition), ratio);
                 bowserFlag.transform.position = Vector2.Lerp(bowserFlagPosition, bulbaFlagPosition, ratio);
-                ratio += 0.5f * Time.fixedDeltaTime;
+                ratio += 0.6f * Time.fixedDeltaTime;
                 yield return null;
             }
             else
             {
-                StartCoroutine(PlayerSlideDown());
                 haveFlagsSwapped = true;
                 yield return null;
             }
@@ -144,12 +159,13 @@ public class Flagpole : MonoBehaviour
             if (ratio <= 1.0f)
             {
                 player.transform.position = Vector2.Lerp(playerStartingPosition, new Vector2(player.transform.position.x, flagBottom.transform.position.y + 0.3f), ratio);
-                ratio += 0.6f * Time.fixedDeltaTime;
+                ratio += 0.65f * Time.fixedDeltaTime;
                 yield return null;
             }
             else
             {
                 yield return new WaitForSeconds(0.7f);
+                Instantiate(smoke, bowserFlag.transform.position, Quaternion.identity);
                 Destroy(bowserFlag);
                 yield return new WaitForSeconds(0.5f);
                 playerAnimator.SetTrigger("Won");

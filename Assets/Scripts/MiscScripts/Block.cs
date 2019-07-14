@@ -105,7 +105,7 @@ public class Block : MonoBehaviour
             if (ratio <= 1.0f)
             {
                 transform.position = Vector2.Lerp(targetPosition, startingPosition, ratio);
-                ratio += 10.0f * Time.fixedDeltaTime;
+                ratio += 20.0f * Time.fixedDeltaTime;
                 yield return null;
             }
             else

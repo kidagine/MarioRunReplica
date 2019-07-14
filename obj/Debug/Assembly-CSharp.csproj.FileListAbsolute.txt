@@ -1,0 +1,2 @@
+C:\UnityProjects\ProjectJuno\Super Bulbathemis Run\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+C:\UnityProjects\ProjectJuno\Super Bulbathemis Run\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache

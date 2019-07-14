@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
 
+    [SerializeField] private GameObject player;
     [SerializeField] private GameObject pause;
     [SerializeField] private GameObject restartMenu;
     [SerializeField] private GameObject quitMenu;
@@ -15,12 +17,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject blackPanel;
     [SerializeField] private GameObject whitePanel;
     [SerializeField] private GameObject whiteCircleMask;
+    [SerializeField] private GameObject bowserPanel;
+    [SerializeField] private GameObject bowserMask;
     [SerializeField] private GameObject introStageText;
     [SerializeField] private GameObject endStageText;
     [SerializeField] private GameObject playerUI;
+    [SerializeField] private GameObject gameOverUI;
     [SerializeField] private GameObject cmvIngameCam;
     [SerializeField] private GameObject introStageCin;
     [SerializeField] private GameObject endStageCin;
+    [SerializeField] private CinemachineVirtualCamera cinemachineEndStageCin;
+    [SerializeField] private Animator playerUIAnimator;
+    [SerializeField] private AnimationCurve bowserAnimationCurve;
     [SerializeField] private Text coinsText;
 
     public static bool isScrollingOn;
@@ -96,11 +104,13 @@ public class GameManager : MonoBehaviour
 
     public void CourseCompleted()
     {
+        cinemachineEndStageCin.GetCinemachineComponent<CinemachineFramingTransposer>().m_DeadZoneWidth = 1.0f;
         endStageText.SetActive(true);
     }
 
     public void StartScaleDownCircle()
     {
+        playerUIAnimator.SetTrigger("FadeOut");
         whitePanel.SetActive(true);
         whiteCircleMask.SetActive(true);
         StartCoroutine(ScaleDownCircle());
@@ -117,12 +127,50 @@ public class GameManager : MonoBehaviour
             if (ratio <= 1.0f)
             {
                 whiteCircleMask.transform.localScale = Vector2.Lerp(startingScale, targetScale, ratio);
-                ratio += 1.5f * Time.deltaTime;
+                ratio += 0.5f * Time.fixedDeltaTime;
                 yield return null;
             }
             else
             {
                 hasWhiteCircleMaskReachedMaxScale = true;
+                yield return null;
+            }
+        }
+    }
+
+    public void GameOver()
+    {
+        FindObjectOfType<AudioManager>().Play("Death");
+        FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+        FindObjectOfType<AudioManager>().Pause("Jump");
+        playerUIAnimator.SetTrigger("FadeOut");
+        bowserMask.SetActive(true);
+        bowserPanel.SetActive(true);
+        bowserMask.transform.position = new Vector2(player.transform.position.x + 1, player.transform.position.y + 4);
+        bowserPanel.transform.position = new Vector2(player.transform.position.x + 1, player.transform.position.y + 4);
+        gameOverUI.SetActive(true);
+        StartCoroutine(ScaleUpBowserEmblem());
+    }
+
+    IEnumerator ScaleUpBowserEmblem()
+    {
+        bool hasBowserMaskReachedMaxScale = false;
+        float ratio = 0.0f;
+        float curveAmount = bowserAnimationCurve.Evaluate(ratio);
+        Vector2 startingScale = new Vector2(3.0f, 3.0f);
+        Vector2 targetScale = new Vector2(0.0f, 0.0f);
+        while (!hasBowserMaskReachedMaxScale)
+        {
+            if (curveAmount <= 1.0f)
+            {
+                bowserMask.transform.localScale = Vector2.Lerp(startingScale, targetScale, curveAmount);
+                curveAmount = bowserAnimationCurve.Evaluate(ratio);
+                ratio += 0.3f * Time.fixedDeltaTime;
+                yield return null;
+            }
+            else
+            {
+                hasBowserMaskReachedMaxScale = true;
                 yield return null;
             }
         }
@@ -155,6 +203,9 @@ public class GameManager : MonoBehaviour
     public void Restart()
     {
         FindObjectOfType<AudioManager>().Play("Click");
+        isScrollingOn = false;
+        isPausered = false;
+        hasWon = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
