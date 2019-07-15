@@ -203,6 +203,7 @@ public class GameManager : MonoBehaviour
     public void Restart()
     {
         FindObjectOfType<AudioManager>().Play("Click");
+        Time.timeScale = 1.0f;
         isScrollingOn = false;
         isPausered = false;
         hasWon = false;

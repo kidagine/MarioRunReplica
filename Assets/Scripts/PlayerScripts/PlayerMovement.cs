@@ -18,8 +18,10 @@ public class PlayerMovement : MonoBehaviour
     private float fallMultiplier = 1.5f;
     private float jumpTimer = 0.08f;
     private float hitOnceTimer = 0.2f;
+    private float walkingLeftTimer = 1.3f;
     private float spinJumpCooldownTimer = 0.0f;
     private int killStreak;
+    private bool isFacingRight = true;
     private bool isJumping;
     private bool isHoping;
     private bool isAirSpinning;
@@ -36,10 +38,12 @@ public class PlayerMovement : MonoBehaviour
             if (!GameManager.isPausered)
             {
                 if (!GameManager.hasWon)
-                    Run();
-                if (!isHoping)
                 {
-                    Jump();
+                    Run();
+                    if (!isHoping)
+                    {
+                        Jump();
+                    }
                 }
             }
             CheckGround();
@@ -53,6 +57,10 @@ public class PlayerMovement : MonoBehaviour
                 GameManager.isScrollingOn = true;
                 GameManager.isPausered = false;
                 hasHitOnce = true;
+                if (isWallSliding)
+                {
+                    Jump();
+                }
             }
         }
 
@@ -74,7 +82,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void Run()
     {
-        rb.velocity = new Vector2(runSpeed, rb.velocity.y);
+        if (isFacingRight)
+        {
+            rb.velocity = new Vector2(runSpeed, rb.velocity.y);
+        }
+        else
+        {
+            rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
+            if (walkingLeftTimer >= 0.0f)
+            {
+                walkingLeftTimer -= Time.deltaTime;
+            }
+            else
+            {
+                if (isGrounded)
+                {
+                    Flip();
+                    isFacingRight = true;
+                    walkingLeftTimer = 1.3f;
+                }
+            }
+        }
         animator.SetBool("IsRunning", true);
     }
 
@@ -122,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
                             spinJumpCooldownTimer = 0.7f;
                             rb.gravityScale = 0;
                             fallMultiplier = 0;
-                            rb.velocity = new Vector2(0, 0);
+                            rb.velocity = Vector2.zero;
                             isAirSpinning = true;
                         }
                     }
@@ -136,13 +164,23 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                if (isWallSlidingOnRight)
+                if (Input.GetMouseButtonDown(0))
                 {
-
-                }
-                else
-                {
-
+                    FindObjectOfType<AudioManager>().Play("Jump");
+                    animator.SetBool("IsWallJumping", true);
+                    isJumping = true;
+                    isAirSpinning = false;  
+                    jumpTimer = 0.08f;
+                    rb.AddForce(new Vector2(0.0f, jumpForce));
+                    Flip();
+                    if (isWallSlidingOnRight)
+                    {
+                        isFacingRight = false;
+                    }
+                    else
+                    {
+                        isFacingRight = true;
+                    }
                 }
             }
             if (Input.GetMouseButtonUp(0))
@@ -209,8 +247,20 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Wall"))
         {
+            animator.SetBool("IsWallJumping", false);
             GameManager.isScrollingOn = false;
             GameManager.isPausered = true;
+            foreach (ContactPoint2D point in other.contacts)
+            {
+                if (point.normal.x >= 0.9f)
+                {
+                    isWallSlidingOnRight = false;
+                }
+                else if (point.normal.x < 0.9f)
+                {
+                    isWallSlidingOnRight = true;
+                }
+            }
         }
     }
 
@@ -222,20 +272,32 @@ public class PlayerMovement : MonoBehaviour
             {
                 animator.SetBool("IsWallSliding", true);
                 isWallSliding = true;
-                rb.velocity = new Vector2(0, -0.1f);
-                if ((transform.position.x - other.transform.position.x) < 0)
-                {
-
-                }
-                else if ((transform.position.x - other.transform.position.x) > 0)
-                {
-
-                }
+                rb.velocity = new Vector2(0, -1.5f);
             }
             else
             {
                 animator.SetBool("IsWallSliding", false);
                 isWallSliding = false;
+            }
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Wall"))
+        {
+            animator.SetBool("IsWallSliding", false);
+            isWallSliding = false;
+            GameManager.isScrollingOn = true;
+            GameManager.isPausered = false;
+            hasHitOnce = true;
+            if (isWallSlidingOnRight)
+            {
+                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
             }
         }
     }
@@ -266,9 +328,9 @@ public class PlayerMovement : MonoBehaviour
             animator.SetTrigger("Flag");
             rb.gravityScale = 0;
             fallMultiplier = 0;
-            rb.velocity = new Vector2(0, 0);
+            rb.velocity = Vector2.zero;
             GameManager.hasWon = true;
-            transform.position = new Vector2(transform.position.x + 0.17f, transform.position.y);
+            transform.position = new Vector2(transform.position.x + 0.27f, transform.position.y);
         }
         else if (other.gameObject.CompareTag("Death"))
         {
@@ -283,11 +345,6 @@ public class PlayerMovement : MonoBehaviour
         {
             isHoping = false;
         }
-        else if (other.gameObject.CompareTag("Wall"))
-        {
-            animator.SetBool("IsWallSliding", false);
-            isWallSliding = false;
-        }
     }
 
     public void ResetFromSpinJump()
@@ -300,6 +357,13 @@ public class PlayerMovement : MonoBehaviour
     public void CinematicPosition(float xValue, float yValue)
     {
         transform.position = new Vector2(transform.position.x + xValue, transform.position.y + yValue);
+    }
+
+    private void Flip()
+    {
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
     }
 
     IEnumerator PoweringUp()
