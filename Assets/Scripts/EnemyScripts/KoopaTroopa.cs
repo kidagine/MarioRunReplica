@@ -9,7 +9,7 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
     [SerializeField] private GameObject ImpactEffectPrefab;
     [SerializeField] private bool isFacingRight;
 
-
+    private Rigidbody2D rb;
     private float runSpeed = 0.6f;
     private int killStreak;
     private bool isSpinning;
@@ -18,6 +18,7 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         if (isFacingRight)
         {
             Vector3 theScale = transform.localScale;
@@ -37,11 +38,11 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
         {
             if (!isFacingRight)
             {
-                transform.Translate(Vector2.right * runSpeed * Time.deltaTime);
+                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
             }
             else
             {
-                transform.Translate(Vector2.right * -runSpeed * Time.deltaTime);
+                rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
             }
         }
     }

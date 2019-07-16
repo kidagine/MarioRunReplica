@@ -9,7 +9,6 @@ public class ScrollingBackground : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private Material material;
 
-    private Rigidbody2D playerRb;
     private Vector2 offset;
     private readonly float speed = 0.1f;
 

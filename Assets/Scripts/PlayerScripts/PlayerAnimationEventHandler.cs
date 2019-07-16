@@ -21,7 +21,14 @@ public class PlayerAnimationEventHandler : MonoBehaviour
 
     public void TriggerEndStageCamera()
     {
-        playerMovement.CinematicPosition(0.0f, -0.052f);
+        if (playerMovement.IsPoweredUp)
+        {
+            playerMovement.CinematicPosition(0.0f, 0.08f);
+        }
+        else
+        {
+            playerMovement.CinematicPosition(0.0f, -0.052f);
+        }
         FindObjectOfType<GameManager>().EndStageCamera();
     }
 
@@ -33,6 +40,11 @@ public class PlayerAnimationEventHandler : MonoBehaviour
     public void TriggerStartScaleDownCircle()
     {
         FindObjectOfType<GameManager>().StartScaleDownCircle();
+    }
+
+    public void TriggerPlayerDeath()
+    {
+        playerMovement.Death();
     }
 
 }

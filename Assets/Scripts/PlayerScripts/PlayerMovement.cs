@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
 
     public Rigidbody2D rb;
+    [SerializeField] private PlayerCheckUp playerCheckUp;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask groundLayerMask;
 
@@ -29,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     private bool hasHitOnce;
     private bool isWallSliding;
     private bool isWallSlidingOnRight;
+    private bool isWallInfront;
 
 
     void Update()
@@ -39,7 +41,10 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (!GameManager.hasWon)
                 {
-                    Run();
+                    if (!isWallInfront)
+                    {
+                        Run();
+                    }
                     if (!isHoping)
                     {
                         Jump();
@@ -158,7 +163,7 @@ public class PlayerMovement : MonoBehaviour
                     {
                         spinJumpCooldownTimer -= Time.deltaTime;
                     }
-
+                    animator.SetBool("IsRunning", true);
                     animator.SetBool("IsJumping", true);
                 }
             }
@@ -168,6 +173,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     FindObjectOfType<AudioManager>().Play("Jump");
                     animator.SetBool("IsWallJumping", true);
+                    isWallInfront = false;
                     isJumping = true;
                     isAirSpinning = false;  
                     jumpTimer = 0.08f;
@@ -237,10 +243,12 @@ public class PlayerMovement : MonoBehaviour
 
                     killStreak++;
                     other.gameObject.GetComponent<IEnemy>().Stomped(killStreak);
+                    Debug.Log("BBB");
                 }
                 else
                 {
                     rb.AddForce(new Vector2(0.0f, hopForce * 3f));
+                    Debug.Log("AAA");
                 }
                 hasHitOnce = true;
             }
@@ -248,8 +256,8 @@ public class PlayerMovement : MonoBehaviour
         else if (other.gameObject.CompareTag("Wall"))
         {
             animator.SetBool("IsWallJumping", false);
-            GameManager.isScrollingOn = false;
-            GameManager.isPausered = true;
+            animator.SetBool("IsRunning", false);
+            isWallInfront = true;
             foreach (ContactPoint2D point in other.contacts)
             {
                 if (point.normal.x >= 0.9f)
@@ -270,12 +278,15 @@ public class PlayerMovement : MonoBehaviour
         {
             if (rb.velocity.y < -0.1)
             {
+                animator.SetBool("IsRunning", true);
                 animator.SetBool("IsWallSliding", true);
                 isWallSliding = true;
                 rb.velocity = new Vector2(0, -1.5f);
+  
             }
             else
             {
+                animator.SetBool("IsRunning", false);
                 animator.SetBool("IsWallSliding", false);
                 isWallSliding = false;
             }
@@ -315,10 +326,7 @@ public class PlayerMovement : MonoBehaviour
         else if (other.gameObject.CompareTag("Vault"))
         {
             isHoping = true;
-            if (isGrounded)
-            {
-                rb.AddForce(new Vector2(0.0f, hopForce * 3f));
-            }
+            rb.AddForce(new Vector2(0.0f, hopForce * 3f));
         }
         else if (other.gameObject.CompareTag("Flagpole"))
         {   
@@ -330,10 +338,20 @@ public class PlayerMovement : MonoBehaviour
             fallMultiplier = 0;
             rb.velocity = Vector2.zero;
             GameManager.hasWon = true;
-            transform.position = new Vector2(transform.position.x + 0.27f, transform.position.y);
+            if (IsPoweredUp)
+            {
+                transform.position = new Vector2(transform.position.x + 0.34f, transform.position.y);
+            }
+            else
+            {
+                transform.position = new Vector2(transform.position.x + 0.27f, transform.position.y);
+            }
         }
         else if (other.gameObject.CompareTag("Death"))
         {
+            FindObjectOfType<AudioManager>().Play("Death");
+            FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+            FindObjectOfType<AudioManager>().Pause("Jump");
             FindObjectOfType<GameManager>().GameOver();
             Destroy(gameObject);
         }
@@ -364,6 +382,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+    }
+
+    public void Death()
+    {
+        FindObjectOfType<GameManager>().GameOver();
     }
 
     IEnumerator PoweringUp()

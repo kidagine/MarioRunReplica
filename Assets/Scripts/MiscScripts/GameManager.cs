@@ -140,14 +140,11 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        FindObjectOfType<AudioManager>().Play("Death");
-        FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
-        FindObjectOfType<AudioManager>().Pause("Jump");
         playerUIAnimator.SetTrigger("FadeOut");
         bowserMask.SetActive(true);
         bowserPanel.SetActive(true);
-        bowserMask.transform.position = new Vector2(player.transform.position.x + 1, player.transform.position.y + 4);
-        bowserPanel.transform.position = new Vector2(player.transform.position.x + 1, player.transform.position.y + 4);
+        bowserMask.transform.position = new Vector2(player.transform.position.x + 1, 1.7f);
+        bowserPanel.transform.position = new Vector2(player.transform.position.x + 1, 1.7f);
         gameOverUI.SetActive(true);
         StartCoroutine(ScaleUpBowserEmblem());
     }

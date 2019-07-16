@@ -17,6 +17,7 @@ public class Goomba : MonoBehaviour, IEnemy
     private bool isFacingRight = false;
     private bool isInsideMainCamera;
     private bool canMove = true;
+    private bool hitOnce;
     private float runSpeed = 0.6f;
 
 
@@ -37,11 +38,11 @@ public class Goomba : MonoBehaviour, IEnemy
         {
             if (isFacingRight)
             {
-                transform.Translate(Vector2.right * runSpeed * Time.deltaTime);
+                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
             }
             else
             {
-                transform.Translate(Vector2.right * -runSpeed * Time.deltaTime);
+                rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
             }
         }
     }
@@ -137,10 +138,22 @@ public class Goomba : MonoBehaviour, IEnemy
     {
         if (other.gameObject.CompareTag("Wall"))
         {
-            Vector3 theScale = transform.localScale;
-            theScale.x *= -1;
-            transform.localScale = theScale;
-            isFacingRight = !isFacingRight;
+            if (!hitOnce)
+            {
+                hitOnce = true;
+                Vector3 theScale = transform.localScale;
+                theScale.x *= -1;
+                transform.localScale = theScale;
+                isFacingRight = !isFacingRight;
+            }
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Wall"))
+        {
+            hitOnce = false;
         }
     }
 

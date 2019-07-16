@@ -7,16 +7,18 @@ public class Mushroom : MonoBehaviour
 
     [SerializeField] private SpriteRenderer spriteRenderer;
 
+    private Rigidbody2D rb;
     private Vector2 startingPoint;
     private Vector2 targetPoint;
     private Vector2 controlPoint;
-    private bool isFacingRight;
+    private bool isFacingRight = true;
     private float ratio;
     private float runSpeed = 1.5f;
 
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         startingPoint = new Vector2(transform.position.x, transform.position.y);
         targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 1f);
         controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.0f;
@@ -30,13 +32,13 @@ public class Mushroom : MonoBehaviour
         }
         else
         {
-            if (!isFacingRight)
+            if (isFacingRight)
             {
-                transform.Translate(Vector2.right * runSpeed * Time.deltaTime);
+                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
             }
             else 
             {
-                transform.Translate(Vector2.right * -runSpeed * Time.deltaTime);
+                rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
             }
         }
     }
@@ -57,10 +59,15 @@ public class Mushroom : MonoBehaviour
             FindObjectOfType<AudioManager>().Play("PowerUp");
             Destroy(gameObject);
         }
-        else if (other.gameObject.CompareTag("Wall"))
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Vault"))
         {
             isFacingRight = !isFacingRight;
         }
     }
+
 
 }

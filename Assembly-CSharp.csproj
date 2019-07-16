@@ -81,6 +81,7 @@
     <Compile Include="Assets\Scripts\MiscScripts\ScrollingBackground.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Sounds.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerAnimationEventHandler.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\PlayerCheckUp.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>

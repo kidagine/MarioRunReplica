@@ -7,6 +7,8 @@ public class ClockTimer : MonoBehaviour
 {
 
     [SerializeField] Animator animator;
+    [SerializeField] Animator playerAnimator;
+    [SerializeField] Rigidbody2D playerRb;
     [SerializeField] Text timerText;
 
     private int timer = 60;
@@ -46,6 +48,12 @@ public class ClockTimer : MonoBehaviour
                 yield return null;
             }
         }
+        FindObjectOfType<AudioManager>().Play("Death");
+        FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+        FindObjectOfType<AudioManager>().Pause("Jump");
+        playerRb.constraints = RigidbodyConstraints2D.FreezeAll;
+        playerAnimator.SetTrigger("Death");
+        yield return null;
     }
 
 }

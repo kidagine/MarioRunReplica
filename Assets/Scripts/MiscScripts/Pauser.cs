@@ -24,7 +24,10 @@ public class Pauser : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            animator.SetBool("IsPressedDown", false);
+            if (!GameManager.isPausered)
+            {
+                animator.SetBool("IsPressedDown", false);
+            }
         }
     }
 
