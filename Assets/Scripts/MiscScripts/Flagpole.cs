@@ -6,6 +6,7 @@ public class Flagpole : MonoBehaviour
 {
 
     [SerializeField] private Animator playerAnimator;
+    [SerializeField] private GameObject player;
     [SerializeField] private GameObject smoke;
     [SerializeField] private GameObject flagTop;
     [SerializeField] private GameObject flagBottom;
@@ -13,7 +14,6 @@ public class Flagpole : MonoBehaviour
     [SerializeField] private GameObject bulbaFlag;
     [SerializeField] private GameObject[] coin1UpList;
 
-    private GameObject player;
     private GameObject coin1Up;
     private Vector2 playerTouchFlagPosition;
     private bool isTriggered;
@@ -26,7 +26,6 @@ public class Flagpole : MonoBehaviour
             if (!isTriggered)
             {
                 GameManager.hasWon = true;
-                player = other.gameObject;
                 playerTouchFlagPosition = other.transform.position;
 
                 int playerFlagPosition = ConvertToZeroTenRange(other.transform.position);
@@ -116,6 +115,8 @@ public class Flagpole : MonoBehaviour
     {
         float ratio = 0.0f;
         float bulbaFlagTargetPosition = 0.0f;
+        float maxFlagYPosition = 1.4f;
+        float minimumFlagYPosition = -1.2f;
         bool haveFlagsSwapped = false;
         Vector2 bowserFlagPosition = bowserFlag.transform.position;
         Vector2 bulbaFlagPosition = bulbaFlag.transform.position;
@@ -123,13 +124,13 @@ public class Flagpole : MonoBehaviour
         {
             if (ratio <= 1.0f)
             {
-                if (playerTouchFlagPosition.y < flagBottom.transform.position.y + 0.3f)
+                if (playerTouchFlagPosition.y > maxFlagYPosition)
                 {
-                    bulbaFlagTargetPosition = flagBottom.transform.position.y + 0.3f;
+                    bulbaFlagTargetPosition = maxFlagYPosition;
                 }
-                else if (playerTouchFlagPosition.y > flagTop.transform.position.y)
+                else if (playerTouchFlagPosition.y < minimumFlagYPosition)
                 {
-                    bulbaFlagTargetPosition = flagTop   .transform.position.y + 0.3f;
+                    bulbaFlagTargetPosition = minimumFlagYPosition;
                 }
                 else
                 {
@@ -173,6 +174,11 @@ public class Flagpole : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        Debug.Log(collision.gameObject.name);
     }
 
 }

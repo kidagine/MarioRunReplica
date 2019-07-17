@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Animator playerUIAnimator;
     [SerializeField] private AnimationCurve bowserAnimationCurve;
     [SerializeField] private Text coinsText;
+    [SerializeField] private Text coinsPauseText;
 
     public static bool isScrollingOn;
     public static bool isPausered;
@@ -89,6 +90,17 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    public int GetCoinsAmount()
+    {
+        return coinsAmount;
+    }
+
+    public void DecrementCoins(int amount)
+    {
+        coinsAmount -= amount;
+        coinsText.text = coinsAmount.ToString();
     }
 
     public void IncrementCoins(int amount)
@@ -176,7 +188,9 @@ public class GameManager : MonoBehaviour
     public void Pause()
     {
         FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+        FindObjectOfType<AudioManager>().Pause("Jump");
         FindObjectOfType<AudioManager>().Play("Pause");
+        coinsPauseText.text = coinsText.text;   
         Time.timeScale = 0.0f;
         runUI.SetActive(false);
         pause.SetActive(true);

@@ -6,14 +6,17 @@ public class Block : MonoBehaviour
 {
 
     [SerializeField] private GameObject breakBlockParticle;
+    [SerializeField] private GameObject coinPrefab;
     [SerializeField] private Animator animator;
     [SerializeField] private Sprite emptyBlockSprite;
     [SerializeField] private bool isDestructible;
+    [SerializeField] private bool hasMultipleItems;
 
     private Transform itemInside;
     private Vector2 startingPosition;
     private SpriteRenderer spriteRenderer;
     private bool isEmpty;
+    private bool isCollided;
 
     void Start()
     {
@@ -30,38 +33,46 @@ public class Block : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            foreach (ContactPoint2D point in other.contacts)
+            if (!isCollided)
             {
-                if (point.normal.y >= 0.9f)
+                isCollided = true;
+                foreach (ContactPoint2D point in other.contacts)
                 {
-                    if (!isEmpty)
+                    if (point.normal.y >= 0.9f)
                     {
-                        if (isDestructible)
+                        if (!isEmpty)
                         {
-                            if (other.gameObject.GetComponent<PlayerMovement>().IsPoweredUp)
+                            if (isDestructible)
                             {
-                                FindObjectOfType<AudioManager>().Play("BreakBlock");
-                                Instantiate(breakBlockParticle, transform.position, Quaternion.identity);
-                                Destroy(gameObject);
+                                if (other.gameObject.GetComponent<PlayerMovement>().IsPoweredUp)
+                                {
+                                    FindObjectOfType<AudioManager>().Play("BreakBlock");
+                                    Instantiate(breakBlockParticle, transform.position, Quaternion.identity);
+                                    Destroy(gameObject);
+                                }
+                                else
+                                {
+                                    StartCoroutine(ShakeUp());
+                                }
                             }
                             else
                             {
-                                StartCoroutine(ShakeUp());
-                            }
-                        }
-                        else
-                        {
-                            if (itemInside != null)
-                            {
-                                if (itemInside.name.StartsWith("Mushroom"))
+                                if (itemInside != null)
                                 {
-                                    FindObjectOfType<AudioManager>().Play("PowerUpAppears");
-                                    StartCoroutine(ShakeUp());
+                                    if (itemInside.name.StartsWith("Mushroom"))
+                                    {
+                                        FindObjectOfType<AudioManager>().Play("PowerUpAppears");
+                                        StartCoroutine(ShakeUp());
+                                    }
+                                    else if (itemInside.name.StartsWith("Coin"))
+                                    {
+                                        FindObjectOfType<AudioManager>().Play("CoinPickUp");
+                                        FindObjectOfType<GameManager>().IncrementCoins(1);
+                                        StartCoroutine(ShakeUp());
+                                    }
                                 }
-                                else if (itemInside.name.StartsWith("Coin"))
+                                else if (hasMultipleItems)
                                 {
-                                    FindObjectOfType<AudioManager>().Play("CoinPickUp");
-                                    FindObjectOfType<GameManager>().IncrementCoins(1);
                                     StartCoroutine(ShakeUp());
                                 }
                             }
@@ -91,6 +102,10 @@ public class Block : MonoBehaviour
                     itemInside.gameObject.SetActive(true);
                     isEmpty = true;
                 }
+                else if (hasMultipleItems)
+                {
+                    InstantiateCoinsRandomly();
+                }
             hasReachedTop = true;
             StartCoroutine(ShakeDown());
         }
@@ -118,6 +133,17 @@ public class Block : MonoBehaviour
                 hasReachedBottom = true;
                 yield return null;
             }
+    }
+
+    private void InstantiateCoinsRandomly()
+    {
+        int numberOfCoins = Random.Range(3, 5);
+        for (int i = 0; i < numberOfCoins; i++)
+        {
+            GameObject coin = Instantiate(coinPrefab, new Vector2(transform.position.x, transform.position.y + 0.5f), Quaternion.identity);
+            Coin coinScript = coin.GetComponent<Coin>();
+            coinScript.AddForce(true);
+        }
     }
 
 }

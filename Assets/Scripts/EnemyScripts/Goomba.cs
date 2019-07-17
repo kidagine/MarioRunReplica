@@ -18,7 +18,7 @@ public class Goomba : MonoBehaviour, IEnemy
     private bool isInsideMainCamera;
     private bool canMove = true;
     private bool hitOnce;
-    private float runSpeed = 0.6f;
+    private float runSpeed = 0.7f;
 
 
     void Start()
@@ -54,7 +54,7 @@ public class Goomba : MonoBehaviour, IEnemy
         Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
         canMove = false;
         transform.Translate(Vector2.right * 0.0f);
-        Destroy(gameObject, 0.3f);
+        Destroy(gameObject, 0.25f);
     }
 
     public void Hit(int killStreak)

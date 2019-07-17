@@ -10,8 +10,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerCheckUp playerCheckUp;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask groundLayerMask;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private GameObject coinPrefab;
 
     [HideInInspector] public bool IsPoweredUp;
+    [HideInInspector] public bool isWallInfront;
     private readonly float runSpeed = 2.0f;
     private readonly float jumpForce = 200f;
     private readonly float hopForce = 85.0f;
@@ -23,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     private float spinJumpCooldownTimer = 0.0f;
     private int killStreak;
     private bool isFacingRight = true;
+    private bool isInvunrable;
     private bool isJumping;
     private bool isHoping;
     private bool isAirSpinning;
@@ -30,7 +34,6 @@ public class PlayerMovement : MonoBehaviour
     private bool hasHitOnce;
     private bool isWallSliding;
     private bool isWallSlidingOnRight;
-    private bool isWallInfront;
 
 
     void Update()
@@ -41,10 +44,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (!GameManager.hasWon)
                 {
-                    if (!isWallInfront)
-                    {
-                        Run();
-                    }
+                    Run();
                     if (!isHoping)
                     {
                         Jump();
@@ -108,7 +108,10 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
-        animator.SetBool("IsRunning", true);
+        if (!isWallInfront)
+        {
+            animator.SetBool("IsRunning", true);
+        }
     }
 
     private void Jump()
@@ -212,7 +215,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckGround()
     {
         Vector2 boxPosition = new Vector2(transform.position.x, transform.position.y - 0.3f);
-        Vector2 boxSize = new Vector2(0.2f, 0.2f);
+        Vector2 boxSize = new Vector2(0.05f, 0.2f);
         float boxAngle = 0.0f;
 
         isGrounded = Physics2D.OverlapBox(boxPosition, boxSize, boxAngle, groundLayerMask);
@@ -233,28 +236,84 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Enemy"))
         {
-            float offset = 0.2f;
-            if (!hasHitOnce)
+            if (!isInvunrable)
             {
-                if (transform.position.y > other.transform.position.y + offset)
+                Vector2 direction = transform.position - other.transform.position;
+                if (!hasHitOnce)
                 {
-                    FindObjectOfType<AudioManager>().Play("Stomp");
-                    rb.AddForce(new Vector2(0.0f, hopForce * 5f));
+                    if (!isWallInfront)
+                    {
+                        if (Mathf.Abs(direction.y) > Mathf.Abs(direction.x))
+                        {
+                            if (direction.y > 0)
+                            {
+                                FindObjectOfType<AudioManager>().Play("Stomp");
+                                rb.AddForce(new Vector2(0.0f, hopForce * 5f));
 
-                    killStreak++;
-                    other.gameObject.GetComponent<IEnemy>().Stomped(killStreak);
-                    Debug.Log("BBB");
+                                killStreak++;
+                                other.gameObject.GetComponent<IEnemy>().Stomped(killStreak);
+                            }
+                            else
+                            {
+                                if (!IsPoweredUp)
+                                {
+                                    FindObjectOfType<AudioManager>().Play("Death");
+                                    FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+                                    FindObjectOfType<AudioManager>().Pause("Jump");
+                                    rb.constraints = RigidbodyConstraints2D.FreezeAll;
+                                    animator.SetTrigger("Death");
+                                }
+                                else
+                                {
+                                    FindObjectOfType<AudioManager>().Play("PowerUp");
+                                    isInvunrable = true;
+                                    Time.timeScale = 0.0f;
+                                    GameManager.isScrollingOn = false;
+                                    rb.velocity = new Vector2(0.0f, 0.0f);
+                                    IsPoweredUp = false;
+                                    LoseCoins();
+                                    StartCoroutine(PoweringDown());
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("1");
+                            rb.AddForce(new Vector2(0.0f, hopForce * 3f));
+                        }
+                        hasHitOnce = true;
+                    }
+                    else
+                    {
+                        if (!IsPoweredUp)
+                        {
+                            FindObjectOfType<AudioManager>().Play("Death");
+                            FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+                            FindObjectOfType<AudioManager>().Pause("Jump");
+                            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+                            animator.SetTrigger("Death");
+                        }
+                        else
+                        {
+                            FindObjectOfType<AudioManager>().Play("PowerUp");
+                            isInvunrable = true;
+                            Time.timeScale = 0.0f;
+                            GameManager.isScrollingOn = false;
+                            rb.velocity = new Vector2(0.0f, 0.0f);
+                            IsPoweredUp = false;
+                            LoseCoins();
+                            StartCoroutine(PoweringDown());
+                        }
+                    }
                 }
-                else
-                {
-                    rb.AddForce(new Vector2(0.0f, hopForce * 3f));
-                    Debug.Log("AAA");
-                }
-                hasHitOnce = true;
+            }
+            else
+            {
+                Physics2D.IgnoreLayerCollision(11, 12, true);
             }
         }
         else if (other.gameObject.CompareTag("Wall"))
-        {
+        {      
             animator.SetBool("IsWallJumping", false);
             animator.SetBool("IsRunning", false);
             isWallInfront = true;
@@ -299,6 +358,7 @@ public class PlayerMovement : MonoBehaviour
         {
             animator.SetBool("IsWallSliding", false);
             isWallSliding = false;
+            isWallInfront = false;
             GameManager.isScrollingOn = true;
             GameManager.isPausered = false;
             hasHitOnce = true;
@@ -389,6 +449,18 @@ public class PlayerMovement : MonoBehaviour
         FindObjectOfType<GameManager>().GameOver();
     }
 
+    private void LoseCoins()
+    {
+        int numberOfCoins = FindObjectOfType<GameManager>().GetCoinsAmount() / 10;
+        FindObjectOfType<GameManager>().DecrementCoins(numberOfCoins);
+        for (int i = 0; i < numberOfCoins; i++)
+        {
+            GameObject coin = Instantiate(coinPrefab, new Vector2(transform.position.x, transform.position.y + 0.5f), Quaternion.identity);
+            Coin coinScript = coin.GetComponent<Coin>();
+            coinScript.AddForce(false);
+        }
+    }
+
     IEnumerator PoweringUp()
     {
         yield return new WaitForSecondsRealtime(0.1f);
@@ -403,6 +475,50 @@ public class PlayerMovement : MonoBehaviour
         transform.localScale = new Vector3(1.2f, 1.2f, 1.0f);
         Time.timeScale = 1.0f;
         GameManager.isScrollingOn = true;
+    }
+
+    IEnumerator PoweringDown()
+    {
+        yield return new WaitForSecondsRealtime(0.1f);
+        transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.1f);
+        transform.localScale = new Vector3(1.2f, 1.2f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.1f);
+        transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.1f);
+        transform.localScale = new Vector3(1.2f, 1.2f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.1f);
+        transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        Time.timeScale = 1.0f;
+        GameManager.isScrollingOn = true;
+        StartCoroutine(Invunrable());
+    }
+
+    IEnumerator Invunrable()
+    {
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+        yield return new WaitForSecondsRealtime(0.13f);
+        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        yield return new WaitForSecondsRealtime(0.1f);
+        Physics2D.IgnoreLayerCollision(11, 12, false);
+        isInvunrable = false;
     }
 
 }

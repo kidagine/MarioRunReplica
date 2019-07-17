@@ -7,13 +7,16 @@ public class PurpleCoin : MonoBehaviour
 {
 
     [SerializeField] private GameObject purpleCoinUI;
+    [SerializeField] private GameObject purpleCoinPause;
     [SerializeField] private Sprite purpleCoinUISprite;
 
     private Image purpleCoinUIImage;
+    private Image purpleCoinPauseImage;
 
     void Start()
     {
         purpleCoinUIImage = purpleCoinUI.GetComponent<Image>();
+        purpleCoinPauseImage = purpleCoinPause.GetComponent<Image>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -22,6 +25,7 @@ public class PurpleCoin : MonoBehaviour
         {
             FindObjectOfType<AudioManager>().Play("CoinPickUp");
             purpleCoinUIImage.sprite = purpleCoinUISprite;
+            purpleCoinPauseImage.sprite = purpleCoinUISprite;
             Destroy(gameObject);
         }
     }
