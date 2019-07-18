@@ -26,12 +26,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject cmvIngameCam;
     [SerializeField] private GameObject introStageCin;
     [SerializeField] private GameObject endStageCin;
+    [SerializeField] private GameObject bubblePrefab;
     [SerializeField] private CinemachineVirtualCamera cinemachineEndStageCin;
     [SerializeField] private Animator playerUIAnimator;
     [SerializeField] private AnimationCurve bowserAnimationCurve;
+    [SerializeField] private Image bubbleImage;
     [SerializeField] private Text coinsText;
     [SerializeField] private Text coinsPauseText;
+    [SerializeField] private Text bubblesText;
 
+    public static bool isBubbled;
     public static bool isScrollingOn;
     public static bool isPausered;
     public static bool hasWon;
@@ -41,6 +45,7 @@ public class GameManager : MonoBehaviour
     private float cooldownStart = 2.0f;
     private float cooldownPlayerRun = 3.0f;
     private int coinsAmount;
+    private int bubblesAmount = 2;
 
     
     void Awake()
@@ -90,6 +95,11 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    public int GetBubblesAmount()
+    {
+        return bubblesAmount;
     }
 
     public int GetCoinsAmount()
@@ -244,6 +254,24 @@ public class GameManager : MonoBehaviour
     {
         FindObjectOfType<AudioManager>().Play("Click");
         quitMenu.SetActive(true);
+    }
+
+    public void CreateBubble()
+    {
+        if (!isBubbled)
+        {
+            if (bubblesAmount > 0)
+            {
+                Instantiate(bubblePrefab, player.transform.position, Quaternion.identity);
+                bubblesAmount--;
+                bubblesText.text = bubblesAmount.ToString();
+                if (bubblesAmount == 0)
+                {
+                    bubbleImage.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+                    bubblesText.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+                }
+            }
+        }
     }
 
 }

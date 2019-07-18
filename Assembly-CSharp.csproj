@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{D2598649-7278-F796-BF76-18CB29271650}</ProjectGuid>
+    <ProjectGuid>{C7F42E37-965E-3C98-3097-571F2DC10FA8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\MiscScripts\AudioManager.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Block.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\BreakBlockParticle.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\Bubble.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\ClockTimer.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Coin.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Coin1Up.cs" />
@@ -84,40 +85,40 @@
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerCheckUp.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Reference Include="Unity.Timeline.Editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Cinemachine">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Cinemachine.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Cinemachine.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Sprite.Editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Tilemap.Editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.2D.Tilemap.Editor.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Unity.2D.Tilemap.Editor.dll</HintPath>
     </Reference>
     <Reference Include="com.unity.cinemachine.editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/com.unity.cinemachine.editor.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/com.unity.cinemachine.editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-      <HintPath>C:/UnityProjects/ProjectJuno/Super Bulbathemis Run/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+      <HintPath>C:/Users/Kiddo/Desktop/Code/C#/MobileRunner/MobileRunner/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.3.0a7/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

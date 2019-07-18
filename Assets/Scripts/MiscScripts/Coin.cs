@@ -26,13 +26,13 @@ public class Coin : MonoBehaviour
         if (isPositive)
         {
             float randomXForce = Random.Range(155.0f, 225.0f);
-            float randomYForce = Random.Range(40.0f, 60.0f);
+            float randomYForce = Random.Range(40.0f, 75.0f);
             rb.AddForce(new Vector2(randomXForce, randomYForce));
         }
         else
         {
             float randomXForce = Random.Range(-100.0f, -120.0f);
-            float randomYForce = Random.Range(40.0f, 55.0f);
+            float randomYForce = Random.Range(40.0f, 60.0f);
             rb.AddForce(new Vector2(randomXForce, randomYForce));
         }
     }

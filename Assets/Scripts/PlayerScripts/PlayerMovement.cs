@@ -15,6 +15,9 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public bool IsPoweredUp;
     [HideInInspector] public bool isWallInfront;
+    private GameObject bubble;
+    private BoxCollider2D boxCollider;
+    private CircleCollider2D circleCollider;
     private readonly float runSpeed = 2.0f;
     private readonly float jumpForce = 200f;
     private readonly float hopForce = 85.0f;
@@ -36,22 +39,49 @@ public class PlayerMovement : MonoBehaviour
     private bool isWallSlidingOnRight;
 
 
+    private void Start()
+    {
+        boxCollider = GetComponent<BoxCollider2D>();
+        circleCollider = GetComponent<CircleCollider2D>();
+    }
+
     void Update()
     {
         if (GameManager.isScrollingOn)
         {
-            if (!GameManager.isPausered)
+            if (!GameManager.isBubbled)
             {
-                if (!GameManager.hasWon)
+                if (!GameManager.isPausered)
                 {
-                    Run();
-                    if (!isHoping)
+                    if (!GameManager.hasWon)
                     {
-                        Jump();
+                        Run();
+                        if (!isHoping)
+                        {
+                            Jump();
+                        }
                     }
                 }
+                if (!boxCollider.enabled)
+                {
+                    animator.SetBool("IsBubbled", false);
+                    boxCollider.enabled = true;
+                    circleCollider.enabled = true;
+                }
+                CheckGround();
             }
-            CheckGround();
+            else
+            {
+                transform.parent = bubble.transform;
+                transform.position = bubble.transform.position;
+                if (boxCollider.enabled)
+                {
+                    animator.SetBool("IsBubbled", true);
+                    boxCollider.enabled = false;
+                    circleCollider.enabled = false;
+                    rb.velocity = new Vector2(0.0f, rb.velocity.y);
+                }
+            }
         }
         else if (GameManager.isPausered)
         {
@@ -257,11 +287,19 @@ public class PlayerMovement : MonoBehaviour
                             {
                                 if (!IsPoweredUp)
                                 {
-                                    FindObjectOfType<AudioManager>().Play("Death");
-                                    FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
-                                    FindObjectOfType<AudioManager>().Pause("Jump");
-                                    rb.constraints = RigidbodyConstraints2D.FreezeAll;
-                                    animator.SetTrigger("Death");
+                                    if (FindObjectOfType<GameManager>().GetBubblesAmount() == 0)
+                                    {
+                                        FindObjectOfType<AudioManager>().Play("Death");
+                                        FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+                                        FindObjectOfType<AudioManager>().Pause("Jump");
+                                        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+                                        animator.SetTrigger("Death");
+                                    }
+                                    else
+                                    {
+                                        LoseCoins();
+                                        FindObjectOfType<GameManager>().CreateBubble();
+                                    }
                                 }
                                 else
                                 {
@@ -278,7 +316,6 @@ public class PlayerMovement : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("1");
                             rb.AddForce(new Vector2(0.0f, hopForce * 3f));
                         }
                         hasHitOnce = true;
@@ -409,11 +446,19 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Death"))
         {
-            FindObjectOfType<AudioManager>().Play("Death");
-            FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
-            FindObjectOfType<AudioManager>().Pause("Jump");
-            FindObjectOfType<GameManager>().GameOver();
-            Destroy(gameObject);
+            if (FindObjectOfType<GameManager>().GetBubblesAmount() == 0)
+            {
+                FindObjectOfType<AudioManager>().Play("Death");
+                FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+                FindObjectOfType<AudioManager>().Pause("Jump");
+                FindObjectOfType<GameManager>().GameOver();
+                Destroy(gameObject);
+            }
+            else
+            {
+                LoseCoins();
+                FindObjectOfType<GameManager>().CreateBubble();
+            }
         }
     }
 
@@ -459,6 +504,12 @@ public class PlayerMovement : MonoBehaviour
             Coin coinScript = coin.GetComponent<Coin>();
             coinScript.AddForce(false);
         }
+    }
+
+    public void InsideBubble(GameObject bubble)
+    {
+        this.bubble = bubble;
+        GameManager.isBubbled = true;
     }
 
     IEnumerator PoweringUp()
