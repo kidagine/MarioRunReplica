@@ -5,5 +5,6 @@ using UnityEngine;
 public interface IEnemy
 {
     void Walk();
+    void Hit(int killstreak);
     void Stomped(int killStreak);
 }

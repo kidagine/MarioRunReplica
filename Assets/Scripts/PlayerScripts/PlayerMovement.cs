@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private ParticleSystem starParticle;
     [SerializeField] private GameObject coinPrefab;
 
     [HideInInspector] public bool IsPoweredUp;
@@ -18,23 +19,24 @@ public class PlayerMovement : MonoBehaviour
     private GameObject bubble;
     private BoxCollider2D boxCollider;
     private CircleCollider2D circleCollider;
-    private readonly float runSpeed = 2.0f;
+    private readonly float runSpeed = 2.2f;
     private readonly float jumpForce = 200f;
     private readonly float hopForce = 85.0f;
-    private readonly float lowJumpMultiplier = 1.0f;
-    private float fallMultiplier = 1.5f;
+    private readonly float lowJumpMultiplier = 0.5f;
+    private float fallMultiplier = 1.0f;
     private float jumpTimer = 0.08f;
     private float hitOnceTimer = 0.2f;
     private float walkingLeftTimer = 1.3f;
     private float spinJumpCooldownTimer = 0.0f;
+    private float hopCooldown = 1.5f;
     private int killStreak;
     private bool isFacingRight = true;
     private bool isInvunrable;
+    private bool isStarPowered;
     private bool isJumping;
     private bool isHoping;
     private bool isAirSpinning;
     private bool isGrounded;
-    private bool hasHitOnce;
     private bool isWallSliding;
     private bool isWallSlidingOnRight;
 
@@ -56,13 +58,10 @@ public class PlayerMovement : MonoBehaviour
                     if (!GameManager.hasWon)
                     {
                         Run();
-                        if (!isHoping)
-                        {
-                            Jump();
-                        }
+                        Jump();
                     }
                 }
-                if (!boxCollider.enabled)
+                if (boxCollider.enabled)
                 {
                     animator.SetBool("IsBubbled", false);
                     boxCollider.enabled = true;
@@ -74,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 transform.parent = bubble.transform;
                 transform.position = bubble.transform.position;
-                if (boxCollider.enabled)
+                if (!boxCollider.enabled)
                 {
                     animator.SetBool("IsBubbled", true);
                     boxCollider.enabled = false;
@@ -91,28 +90,14 @@ public class PlayerMovement : MonoBehaviour
             {
                 GameManager.isScrollingOn = true;
                 GameManager.isPausered = false;
-                hasHitOnce = true;
                 if (isWallSliding)
                 {
                     Jump();
                 }
             }
         }
-
-        if (hasHitOnce)
-        {
-            hitOnceTimer -= Time.deltaTime;
-            if (hitOnceTimer <= 0)
-            {
-                hasHitOnce = false;
-                hitOnceTimer = 0.05f;
-            }
-        }
-    }
-
-    void FixedUpdate()
-    {
         CheckVerticalVelocity();
+
     }
 
     private void Run()
@@ -150,54 +135,76 @@ public class PlayerMovement : MonoBehaviour
         {
             if (!isWallSliding)
             {
-                if (isGrounded)
+                if (!isHoping)
                 {
-                    spinJumpCooldownTimer = 0f;
-                    if (Input.GetMouseButtonDown(0))
+                    if (isGrounded)
                     {
-                        FindObjectOfType<AudioManager>().Play("Jump");
-                        isJumping = true;
-                        isAirSpinning = false;
-                        jumpTimer = 0.08f;
-                        rb.AddForce(new Vector2(0.0f, jumpForce));
-                    }
+                        spinJumpCooldownTimer = 0f;
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            FindObjectOfType<AudioManager>().Play("Jump");
+                            isJumping = true;
+                            isAirSpinning = false;
+                            jumpTimer = 0.08f;
+                            rb.AddForce(new Vector2(0.0f, jumpForce));
+                        }
 
-                    killStreak = 0;
-                    animator.SetBool("IsJumping", false);
+                        if (!isStarPowered)
+                        {
+                            killStreak = 0;
+                        }
+                        animator.SetBool("IsJumping", false);
+                    }
+                    else
+                    {
+                        if (Input.GetMouseButton(0) && isJumping)
+                        {
+                            if (jumpTimer >= 0)
+                            {
+                                rb.AddForce(new Vector2(0.0f, 20.0f));
+                                jumpTimer -= Time.deltaTime;
+                            }
+                            else
+                            {
+                                isJumping = false;
+                            }
+                        }
+                        if (spinJumpCooldownTimer <= 0)
+                        {
+                            if (Input.GetMouseButtonDown(0) && !isWallInfront)
+                            {
+                                FindObjectOfType<AudioManager>().Play("SpinJump");
+                                animator.SetBool("IsSpinning", true);
+                                spinJumpCooldownTimer = 0.7f;
+                                rb.gravityScale = 0;
+                                fallMultiplier = 0;
+                                rb.velocity = Vector2.zero;
+                                isAirSpinning = true;
+                            }
+                        }
+                        if (isAirSpinning)
+                        {
+                            spinJumpCooldownTimer -= Time.deltaTime;
+                        }
+                        animator.SetBool("IsRunning", true);
+                        animator.SetBool("IsJumping", true);
+                    }
                 }
                 else
                 {
-                    if (Input.GetMouseButton(0) && isJumping)
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        if (jumpTimer >= 0)
-                        {
-                            rb.AddForce(new Vector2(0.0f, 30.0f));
-                            jumpTimer -= Time.deltaTime;
-                        }
-                        else
-                        {
-                            isJumping = false;
-                        }
+                        animator.SetBool("IsSpinning", true);
+                        spinJumpCooldownTimer = 1.2f;
+                        rb.AddForce(new Vector2(0.0f, 350));
+                        isHoping = false;
                     }
-                    if (spinJumpCooldownTimer <= 0)
+                    hopCooldown -= Time.deltaTime;
+                    if (hopCooldown <= 0.0f)
                     {
-                        if (Input.GetMouseButtonDown(0))
-                        {
-                            FindObjectOfType<AudioManager>().Play("SpinJump");
-                            animator.SetBool("IsSpinning", true);
-                            spinJumpCooldownTimer = 0.7f;
-                            rb.gravityScale = 0;
-                            fallMultiplier = 0;
-                            rb.velocity = Vector2.zero;
-                            isAirSpinning = true;
-                        }
+                        isHoping = false;
+                        hopCooldown = 1.5f;
                     }
-                    if (isAirSpinning)
-                    {
-                        spinJumpCooldownTimer -= Time.deltaTime;
-                    }
-                    animator.SetBool("IsRunning", true);
-                    animator.SetBool("IsJumping", true);
                 }
             }
             else
@@ -260,16 +267,21 @@ public class PlayerMovement : MonoBehaviour
                 Time.timeScale = 0.0f;
                 StartCoroutine(PoweringUp());
                 GameManager.isScrollingOn = false;
-                IsPoweredUp = true;
                 rb.velocity = new Vector2(0.0f, 0.0f);
             }
         }
-        else if (other.gameObject.CompareTag("Enemy"))
+        else if (other.gameObject.CompareTag("Star"))
+        {
+            isStarPowered = true;
+            StartCoroutine(StarPower());
+            StartCoroutine(StarCooldown());
+        }
+        if (other.gameObject.CompareTag("Enemy"))
         {
             if (!isInvunrable)
             {
                 Vector2 direction = transform.position - other.transform.position;
-                if (!hasHitOnce)
+                if (!isStarPowered)
                 {
                     if (!isWallInfront)
                     {
@@ -277,7 +289,6 @@ public class PlayerMovement : MonoBehaviour
                         {
                             if (direction.y > 0)
                             {
-                                FindObjectOfType<AudioManager>().Play("Stomp");
                                 rb.AddForce(new Vector2(0.0f, hopForce * 5f));
 
                                 killStreak++;
@@ -303,7 +314,7 @@ public class PlayerMovement : MonoBehaviour
                                 }
                                 else
                                 {
-                                    FindObjectOfType<AudioManager>().Play("PowerUp");
+                                    FindObjectOfType<AudioManager>().Play("PowerDown");
                                     isInvunrable = true;
                                     Time.timeScale = 0.0f;
                                     GameManager.isScrollingOn = false;
@@ -317,8 +328,8 @@ public class PlayerMovement : MonoBehaviour
                         else
                         {
                             rb.AddForce(new Vector2(0.0f, hopForce * 3f));
+                            isHoping = true;
                         }
-                        hasHitOnce = true;
                     }
                     else
                     {
@@ -332,7 +343,7 @@ public class PlayerMovement : MonoBehaviour
                         }
                         else
                         {
-                            FindObjectOfType<AudioManager>().Play("PowerUp");
+                            FindObjectOfType<AudioManager>().Play("PowerDown");
                             isInvunrable = true;
                             Time.timeScale = 0.0f;
                             GameManager.isScrollingOn = false;
@@ -342,6 +353,11 @@ public class PlayerMovement : MonoBehaviour
                             StartCoroutine(PoweringDown());
                         }
                     }
+                }
+                else
+                {
+                    killStreak++;
+                    other.gameObject.GetComponent<IEnemy>().Hit(killStreak);
                 }
             }
             else
@@ -378,7 +394,6 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetBool("IsWallSliding", true);
                 isWallSliding = true;
                 rb.velocity = new Vector2(0, -1.5f);
-  
             }
             else
             {
@@ -398,7 +413,6 @@ public class PlayerMovement : MonoBehaviour
             isWallInfront = false;
             GameManager.isScrollingOn = true;
             GameManager.isPausered = false;
-            hasHitOnce = true;
             if (isWallSlidingOnRight)
             {
                 rb.velocity = new Vector2(runSpeed, rb.velocity.y);
@@ -414,11 +428,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Pauser"))
         {
-            if (!hasHitOnce)
-            {
-                GameManager.isScrollingOn = false;
-                GameManager.isPausered = true;
-            }
+            GameManager.isScrollingOn = false;
+            GameManager.isPausered = true;
         }
         else if (other.gameObject.CompareTag("Vault"))
         {
@@ -430,7 +441,9 @@ public class PlayerMovement : MonoBehaviour
             FindObjectOfType<AudioManager>().Play("Win");
             FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
             FindObjectOfType<AudioManager>().Pause("Jump");
+            FindObjectOfType<GameManager>().DisableUIButtons();
             animator.SetTrigger("Flag");
+            StopStarPower(true);
             rb.gravityScale = 0;
             fallMultiplier = 0;
             rb.velocity = Vector2.zero;
@@ -459,14 +472,6 @@ public class PlayerMovement : MonoBehaviour
                 LoseCoins();
                 FindObjectOfType<GameManager>().CreateBubble();
             }
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Vault"))
-        {
-            isHoping = false;
         }
     }
 
@@ -512,6 +517,47 @@ public class PlayerMovement : MonoBehaviour
         GameManager.isBubbled = true;
     }
 
+    IEnumerator StarPower()
+    {
+        if (isStarPowered)
+        {
+            yield return new WaitForSeconds(0.05f);
+            spriteRenderer.color = Color.yellow;
+            yield return new WaitForSeconds(0.05f);
+            spriteRenderer.color = Color.red;
+            yield return new WaitForSeconds(0.05f);
+            spriteRenderer.color = Color.blue;
+            yield return new WaitForSeconds(0.05f);
+            spriteRenderer.color = Color.green;
+            yield return new WaitForSeconds(0.05f);
+            StartCoroutine(StarPower());
+        }
+        else
+        {
+            spriteRenderer.color = Color.white;
+            yield return null;
+        }
+    }
+
+    IEnumerator StarCooldown()
+    {
+        starParticle.Play();
+        yield return new WaitForSeconds(15.0f);
+        StopStarPower(false);
+    }
+
+    private void StopStarPower(bool touchedFlag)
+    {
+        spriteRenderer.color = Color.white;
+        if (!touchedFlag)
+        {
+            FindObjectOfType<AudioManager>().Play("FirstStageBGM");
+        }
+        FindObjectOfType<AudioManager>().Pause("Star");
+        isStarPowered = false;
+        starParticle.Stop();
+    }
+
     IEnumerator PoweringUp()
     {
         yield return new WaitForSecondsRealtime(0.1f);
@@ -525,6 +571,7 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.1f);
         transform.localScale = new Vector3(1.2f, 1.2f, 1.0f);
         Time.timeScale = 1.0f;
+        IsPoweredUp = true;
         GameManager.isScrollingOn = true;
     }
 

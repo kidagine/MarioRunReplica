@@ -4,6 +4,7 @@ ScriptsOnlyBuild:
     - ArrowCoinSpawner
     - AudioManager
     - Block
+    - Bubble
     - ClockTimer
     - Coin
     - Coin1Up
@@ -19,6 +20,7 @@ ScriptsOnlyBuild:
     - PlayerMovement
     - PurpleCoin
     - ScrollingBackground
+    - Star
     - UnityEngine.UI.LetterSpacing
     Cinemachine.dll:
     - Cinemachine.CinemachineBrain
@@ -39,10 +41,8 @@ ScriptsOnlyBuild:
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.StateNode
     - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
@@ -92,13 +92,13 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11240}
     - Class: 114
-      Script: {instanceID: 11674}
+      Script: {instanceID: 11676}
     - Class: 114
-      Script: {instanceID: 12684}
+      Script: {instanceID: 12688}
     - Class: 114
-      Script: {instanceID: 12974}
+      Script: {instanceID: 12978}
     - Class: 114
-      Script: {instanceID: 13084}
+      Script: {instanceID: 13088}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -169,57 +169,61 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11304}
     - Class: 114
-      Script: {instanceID: 11460}
+      Script: {instanceID: 11354}
     - Class: 114
-      Script: {instanceID: 11594}
+      Script: {instanceID: 11462}
     - Class: 114
-      Script: {instanceID: 11658}
+      Script: {instanceID: 11596}
     - Class: 114
-      Script: {instanceID: 11674}
+      Script: {instanceID: 11660}
     - Class: 114
-      Script: {instanceID: 11690}
+      Script: {instanceID: 11676}
     - Class: 114
-      Script: {instanceID: 11718}
+      Script: {instanceID: 11692}
     - Class: 114
-      Script: {instanceID: 11820}
+      Script: {instanceID: 11720}
     - Class: 114
-      Script: {instanceID: 11944}
+      Script: {instanceID: 11752}
     - Class: 114
-      Script: {instanceID: 11994}
+      Script: {instanceID: 11824}
     - Class: 114
-      Script: {instanceID: 12022}
+      Script: {instanceID: 11948}
     - Class: 114
-      Script: {instanceID: 12116}
+      Script: {instanceID: 11998}
     - Class: 114
-      Script: {instanceID: 12148}
+      Script: {instanceID: 12026}
     - Class: 114
-      Script: {instanceID: 12176}
+      Script: {instanceID: 12120}
     - Class: 114
-      Script: {instanceID: 12276}
+      Script: {instanceID: 12152}
     - Class: 114
-      Script: {instanceID: 12386}
+      Script: {instanceID: 12180}
     - Class: 114
-      Script: {instanceID: 12400}
+      Script: {instanceID: 12280}
     - Class: 114
-      Script: {instanceID: 12412}
+      Script: {instanceID: 12390}
     - Class: 114
-      Script: {instanceID: 12456}
+      Script: {instanceID: 12404}
     - Class: 114
-      Script: {instanceID: 12472}
+      Script: {instanceID: 12416}
     - Class: 114
-      Script: {instanceID: 12518}
+      Script: {instanceID: 12460}
     - Class: 114
-      Script: {instanceID: 12684}
+      Script: {instanceID: 12476}
     - Class: 114
-      Script: {instanceID: 12968}
+      Script: {instanceID: 12522}
     - Class: 114
-      Script: {instanceID: 13008}
+      Script: {instanceID: 12688}
     - Class: 114
-      Script: {instanceID: 13018}
+      Script: {instanceID: 12972}
     - Class: 114
-      Script: {instanceID: 13056}
+      Script: {instanceID: 13012}
     - Class: 114
-      Script: {instanceID: 13084}
+      Script: {instanceID: 13022}
+    - Class: 114
+      Script: {instanceID: 13060}
+    - Class: 114
+      Script: {instanceID: 13088}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -261,7 +265,7 @@ ScriptsOnlyBuild:
     className: CanvasScaler
   - hash:
       serializedVersion: 2
-      Hash: 3c1d94f7962ae979581d6da8b7c3c458
+      Hash: 14fde16237fa404b61458ec693e41634
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Mushroom
@@ -369,7 +373,7 @@ ScriptsOnlyBuild:
     className: TMP_InputField
   - hash:
       serializedVersion: 2
-      Hash: 46ac9f099d6fafb0efbd3ba98abf460d
+      Hash: 84eff5047386a4360d34a91525849144
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: PlayerMovement
@@ -403,6 +407,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: SignalAsset
+  - hash:
+      serializedVersion: 2
+      Hash: 40621ce62cddd2a5b3ceda0908da7ad4
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Bubble
   - hash:
       serializedVersion: 2
       Hash: 0dbc3be398b4869a5c8d0d8481ee402c
@@ -483,7 +493,7 @@ ScriptsOnlyBuild:
     className: NoiseSettings
   - hash:
       serializedVersion: 2
-      Hash: e16da4d682d55936052c24616460b03d
+      Hash: 4f63951c75a83edaa771a3e472cab80c
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: KoopaTroopa
@@ -535,6 +545,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: Selectable
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Star
   - hash:
       serializedVersion: 2
       Hash: 3c2b11a8027702f7fef4a819d8b9191a
@@ -741,7 +757,7 @@ ScriptsOnlyBuild:
     className: TMP_FontAsset
   - hash:
       serializedVersion: 2
-      Hash: 4a30aa13cbc8534b92dffd53cf0c0288
+      Hash: 12f1296dbb3957c672fcbcac720729a5
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameManager
@@ -795,7 +811,7 @@ ScriptsOnlyBuild:
     className: CinemachineVirtualCamera
   - hash:
       serializedVersion: 2
-      Hash: 5f74353b7ac3596f9267ce418075a8bd
+      Hash: 0751294a5d3c00f6d9c9b5162b1fa159
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Coin

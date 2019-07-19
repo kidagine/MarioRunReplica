@@ -16,7 +16,7 @@ public class Block : MonoBehaviour
     private Vector2 startingPosition;
     private SpriteRenderer spriteRenderer;
     private bool isEmpty;
-    private bool isCollided;
+
 
     void Start()
     {
@@ -33,48 +33,48 @@ public class Block : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            if (!isCollided)
+            foreach (ContactPoint2D point in other.contacts)
             {
-                isCollided = true;
-                foreach (ContactPoint2D point in other.contacts)
+                if (point.normal.y >= 0.9f)
                 {
-                    if (point.normal.y >= 0.9f)
+                    if (!isEmpty)
                     {
-                        if (!isEmpty)
+                        if (isDestructible)
                         {
-                            if (isDestructible)
+                            if (other.gameObject.GetComponent<PlayerMovement>().IsPoweredUp)
                             {
-                                if (other.gameObject.GetComponent<PlayerMovement>().IsPoweredUp)
+                                FindObjectOfType<AudioManager>().Play("BreakBlock");
+                                Instantiate(breakBlockParticle, transform.position, Quaternion.identity);
+                                Destroy(gameObject);
+                            }
+                            else
+                            {
+                                StartCoroutine(ShakeUp());
+                            }
+                        }
+                        else
+                        {
+                            if (itemInside != null)
+                            {
+                                if (itemInside.name.StartsWith("Mushroom"))
                                 {
-                                    FindObjectOfType<AudioManager>().Play("BreakBlock");
-                                    Instantiate(breakBlockParticle, transform.position, Quaternion.identity);
-                                    Destroy(gameObject);
+                                    FindObjectOfType<AudioManager>().Play("PowerUpAppears");
+                                    StartCoroutine(ShakeUp());
                                 }
-                                else
+                                else if (itemInside.name.StartsWith("Coin"))
+                                {
+                                    FindObjectOfType<AudioManager>().Play("CoinPickUp");
+                                    FindObjectOfType<GameManager>().IncrementCoins(1);
+                                    StartCoroutine(ShakeUp());
+                                }
+                                else if (itemInside.name.StartsWith("Star"))
                                 {
                                     StartCoroutine(ShakeUp());
                                 }
                             }
-                            else
+                            else if (hasMultipleItems)
                             {
-                                if (itemInside != null)
-                                {
-                                    if (itemInside.name.StartsWith("Mushroom"))
-                                    {
-                                        FindObjectOfType<AudioManager>().Play("PowerUpAppears");
-                                        StartCoroutine(ShakeUp());
-                                    }
-                                    else if (itemInside.name.StartsWith("Coin"))
-                                    {
-                                        FindObjectOfType<AudioManager>().Play("CoinPickUp");
-                                        FindObjectOfType<GameManager>().IncrementCoins(1);
-                                        StartCoroutine(ShakeUp());
-                                    }
-                                }
-                                else if (hasMultipleItems)
-                                {
-                                    StartCoroutine(ShakeUp());
-                                }
+                                StartCoroutine(ShakeUp());
                             }
                         }
                     }
@@ -89,10 +89,11 @@ public class Block : MonoBehaviour
         float ratio = 0.0f;
         Vector2 targetPosition = new Vector2(startingPosition.x, startingPosition.y + 0.2f);
         while (!hasReachedTop)
+        {
             if (ratio <= 1.0f)
             {
                 transform.position = Vector2.Lerp(startingPosition, targetPosition, ratio);
-                ratio += 10.0f * Time.fixedDeltaTime;
+                ratio += 5.0f * Time.fixedDeltaTime;
                 yield return null;
             }
             else
@@ -105,9 +106,11 @@ public class Block : MonoBehaviour
                 else if (hasMultipleItems)
                 {
                     InstantiateCoinsRandomly();
+                    isEmpty = true;
                 }
-            hasReachedTop = true;
-            StartCoroutine(ShakeDown());
+                hasReachedTop = true;
+                StartCoroutine(ShakeDown());
+            }
         }
     }
 
@@ -117,22 +120,27 @@ public class Block : MonoBehaviour
         float ratio = 0.0f;
         Vector2 targetPosition = new Vector2(startingPosition.x, startingPosition.y + 0.2f);
         while (!hasReachedBottom)
+        {
             if (ratio <= 1.0f)
             {
                 transform.position = Vector2.Lerp(targetPosition, startingPosition, ratio);
-                ratio += 20.0f * Time.fixedDeltaTime;
+                ratio += 5.0f * Time.fixedDeltaTime;
                 yield return null;
             }
             else
             {
-                if (transform.childCount > 0)
+                if (isEmpty)
                 {
-                    animator.SetBool("IsSpinning", false);
                     spriteRenderer.sprite = emptyBlockSprite;
+                    if (animator != null)
+                    {
+                        animator.SetBool("IsSpinning", false);
+                    }
                 }
                 hasReachedBottom = true;
                 yield return null;
             }
+        }
     }
 
     private void InstantiateCoinsRandomly()

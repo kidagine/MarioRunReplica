@@ -12,10 +12,10 @@ public class Bubble : MonoBehaviour
     private Rigidbody2D rb;
     private Vector3 velocity = new Vector3(1.0f, 1.0f, 0.0f);
     private Vector2 bubblePosition;
-    private float runSpeed = 4.0f;
-    private float topYPosition = 3.0f;
-    private float bottomYPosition = 2.0f;
-    private float targetYPosition = 3.0f;
+    private float runSpeed = 3.5f;
+    private float topYPosition = 2.5f;
+    private float bottomYPosition = 1.5f;
+    private float targetYPosition = 2.5f;
     private bool hasReachedTopOnce;
 
     
@@ -41,12 +41,12 @@ public class Bubble : MonoBehaviour
         {
             hasReachedTopOnce = true;
             targetYPosition = bottomYPosition;
-            topYPosition = Random.Range(2.9f, 3.1f);
+            topYPosition = Random.Range(2.4f, 2.6f);
         }
         if (transform.position.y <= bottomYPosition + 0.2f && hasReachedTopOnce)
         {
             targetYPosition = topYPosition;
-            bottomYPosition = Random.Range(1.9f, 2.1f);
+            bottomYPosition = Random.Range(1.4f, 1.6f);
         }
     }
 
@@ -54,9 +54,10 @@ public class Bubble : MonoBehaviour
     {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && transform.position.y > bottomYPosition)
             {
                 GameManager.isBubbled = false;
+                FindObjectOfType<GameManager>().DecrementBubbles(1);
                 player.transform.parent = null;
                 Destroy(gameObject);
             }
@@ -65,7 +66,7 @@ public class Bubble : MonoBehaviour
 
     private void MoveBubble()
     {
-        if (transform.position.x > - 6.5f)
+        if (transform.position.x > - 5.5f)
         {
             rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
         }

@@ -6,14 +6,16 @@ public class Mushroom : MonoBehaviour
 {
 
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private GameObject coin5UpPrefab;
 
     private Rigidbody2D rb;
     private Vector2 startingPoint;
     private Vector2 targetPoint;
     private Vector2 controlPoint;
     private bool isFacingRight = true;
+    private bool isCollided;
     private float ratio;
-    private float runSpeed = 1.5f;
+    private float runSpeed = 2.0f;
 
 
     void Start()
@@ -56,14 +58,24 @@ public class Mushroom : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            FindObjectOfType<AudioManager>().Play("PowerUp");
-            Destroy(gameObject);
+            if (!isCollided)
+            {
+                PlayerMovement playerMovement = other.gameObject.GetComponent<PlayerMovement>();
+                if (playerMovement.IsPoweredUp)
+                {
+                    Instantiate(coin5UpPrefab, transform.position, Quaternion.identity);
+                    FindObjectOfType<GameManager>().IncrementCoins(5);
+                    isCollided = true;
+                }
+                FindObjectOfType<AudioManager>().Play("PowerUp");
+                Destroy(gameObject);
+            }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Vault"))
+        if (other.gameObject.CompareTag("Vault") || other.gameObject.CompareTag("Wall"))
         {
             isFacingRight = !isFacingRight;
         }

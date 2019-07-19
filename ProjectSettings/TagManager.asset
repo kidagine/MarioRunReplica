@@ -12,6 +12,7 @@ TagManager:
   - Vault
   - Death
   - Flagpole
+  - Star
   layers:
   - Default
   - TransparentFX

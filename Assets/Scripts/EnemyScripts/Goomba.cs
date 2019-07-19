@@ -10,7 +10,7 @@ public class Goomba : MonoBehaviour, IEnemy
     [SerializeField] private GameObject coin1UpPrefab;
     [SerializeField] private GameObject coin2UpPrefab;
     [SerializeField] private GameObject coin4UpPrefab;
-
+    [SerializeField] private GameObject player;
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
@@ -18,7 +18,7 @@ public class Goomba : MonoBehaviour, IEnemy
     private bool isInsideMainCamera;
     private bool canMove = true;
     private bool hitOnce;
-    private float runSpeed = 0.7f;
+    private float runSpeed = 0.8f;
 
 
     void Start()
@@ -30,6 +30,7 @@ public class Goomba : MonoBehaviour, IEnemy
     void Update()
     {
         Walk();
+        CheckForPlayerDistance();
     }
 
     public void Walk()
@@ -47,8 +48,21 @@ public class Goomba : MonoBehaviour, IEnemy
         }
     }
 
+    private void CheckForPlayerDistance()
+    {
+        if (!isInsideMainCamera)
+        {
+            float distance = Vector2.Distance(transform.position, player.transform.position);
+            if (distance < 3.5f)
+            {
+                isInsideMainCamera = true;
+            }
+        }
+    }
+
     public void Stomped(int killStreak)
     {
+        FindObjectOfType<AudioManager>().Play("Stomp");
         animator.SetTrigger("Stomped");
         HandleKillStreak(killStreak, 0);
         Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
@@ -59,12 +73,13 @@ public class Goomba : MonoBehaviour, IEnemy
 
     public void Hit(int killStreak)
     {
+        FindObjectOfType<AudioManager>().Play("Stomp");
         HandleKillStreak(0, killStreak);
         Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y), Quaternion.identity);
         rb.gravityScale = 0.0f;
         boxCollider.enabled = false;
         Vector2 startingPoint = new Vector2(transform.position.x, transform.position.y);
-        Vector2 targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 2f);
+        Vector2 targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 3f);
         Vector2 controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 5.0f;
         StartCoroutine(Launch(startingPoint, targetPoint, controlPoint));
     }
@@ -157,12 +172,5 @@ public class Goomba : MonoBehaviour, IEnemy
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("MainCamera"))
-        {
-            isInsideMainCamera = true;
-        }
-    }
 
 }

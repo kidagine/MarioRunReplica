@@ -29,7 +29,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject bubblePrefab;
     [SerializeField] private CinemachineVirtualCamera cinemachineEndStageCin;
     [SerializeField] private Animator playerUIAnimator;
+    [SerializeField] private Animator bubbleTextAnimator;
     [SerializeField] private AnimationCurve bowserAnimationCurve;
+    [SerializeField] private Image pauseImage;
     [SerializeField] private Image bubbleImage;
     [SerializeField] private Text coinsText;
     [SerializeField] private Text coinsPauseText;
@@ -42,6 +44,8 @@ public class GameManager : MonoBehaviour
 
     private bool isStartingCutsceneFinished;
     private bool hasCircleMaskReachedMaxScale;
+    private bool areUIButtonsDisabled;
+    private bool wasStarMusicPlaying;
     private float cooldownStart = 2.0f;
     private float cooldownPlayerRun = 3.0f;
     private int coinsAmount;
@@ -100,6 +104,18 @@ public class GameManager : MonoBehaviour
     public int GetBubblesAmount()
     {
         return bubblesAmount;
+    }
+
+    public void DecrementBubbles(int amount)
+    {
+        bubbleTextAnimator.SetBool("IsRed", false);
+        bubblesAmount -= amount;
+        bubblesText.text = bubblesAmount.ToString();
+        if (bubblesAmount == 0)
+        {
+            bubbleImage.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+            bubblesText.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+        }
     }
 
     public int GetCoinsAmount()
@@ -195,15 +211,35 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void DisableUIButtons()
+    {
+        areUIButtonsDisabled = true;
+        pauseImage.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+        bubbleImage.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+        bubblesText.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+    }
+
     public void Pause()
     {
-        FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
-        FindObjectOfType<AudioManager>().Pause("Jump");
-        FindObjectOfType<AudioManager>().Play("Pause");
-        coinsPauseText.text = coinsText.text;   
-        Time.timeScale = 0.0f;
-        runUI.SetActive(false);
-        pause.SetActive(true);
+        if (!areUIButtonsDisabled)
+        {
+            if (FindObjectOfType<AudioManager>().IsPlaying("Star"))
+            {
+                FindObjectOfType<AudioManager>().Pause("Star");
+                wasStarMusicPlaying = true;
+            }
+            else
+            {
+                FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+                wasStarMusicPlaying = false;
+            }
+            FindObjectOfType<AudioManager>().Pause("Jump");
+            FindObjectOfType<AudioManager>().Play("Pause");
+            coinsPauseText.text = coinsText.text;
+            Time.timeScale = 0.0f;
+            runUI.SetActive(false);
+            pause.SetActive(true);
+        }
     }
 
     public void Resume()
@@ -217,7 +253,15 @@ public class GameManager : MonoBehaviour
         pause.SetActive(false);
         runUI.SetActive(true);
         yield return new WaitForSecondsRealtime(0.55f);
-        FindObjectOfType<AudioManager>().UnPause("FirstStageBGM");
+        if (wasStarMusicPlaying)
+        {
+            FindObjectOfType<AudioManager>().UnPause("Star");
+        }
+        else
+        {
+            FindObjectOfType<AudioManager>().UnPause("FirstStageBGM");
+        }
+        wasStarMusicPlaying = false;
         Time.timeScale = 1.0f;
     }
 
@@ -258,18 +302,13 @@ public class GameManager : MonoBehaviour
 
     public void CreateBubble()
     {
-        if (!isBubbled)
+        if (!isBubbled && !areUIButtonsDisabled)
         {
             if (bubblesAmount > 0)
             {
+                isPausered = false;
+                bubbleTextAnimator.SetBool("IsRed", true);
                 Instantiate(bubblePrefab, player.transform.position, Quaternion.identity);
-                bubblesAmount--;
-                bubblesText.text = bubblesAmount.ToString();
-                if (bubblesAmount == 0)
-                {
-                    bubbleImage.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
-                    bubblesText.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
-                }
             }
         }
     }
