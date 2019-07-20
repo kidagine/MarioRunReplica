@@ -22,6 +22,7 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
     private bool isInsideMainCamera;
     private bool canMove = true;
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -106,8 +107,8 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
     {
         if (!isInsideMainCamera)
         {
-            float distance = Vector2.Distance(transform.position, player.transform.position);
-            if (distance < 3.5f)
+            float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
+            if (distance < 3.8f)
             {
                 isInsideMainCamera = true;
             }

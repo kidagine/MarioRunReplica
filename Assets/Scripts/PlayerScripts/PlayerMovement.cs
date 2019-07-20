@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public bool IsPoweredUp;
     [HideInInspector] public bool isWallInfront;
     private GameObject bubble;
+    private GameObject hopedEnemy;
     private BoxCollider2D boxCollider;
     private CircleCollider2D circleCollider;
     private readonly float runSpeed = 2.2f;
@@ -28,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
     private float hitOnceTimer = 0.2f;
     private float walkingLeftTimer = 1.3f;
     private float spinJumpCooldownTimer = 0.0f;
-    private float hopCooldown = 1.5f;
+    private float hopCooldown = 0.4f;
     private int killStreak;
     private bool isFacingRight = true;
     private bool isInvunrable;
@@ -97,7 +98,44 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         CheckVerticalVelocity();
+    }
 
+    private void FixedUpdate()
+    {
+        CheckRight();
+    }
+
+    private void CheckRight()
+    {
+        Vector2 raycastPosition = new Vector2(transform.position.x + 0.5f, transform.position.y);
+        RaycastHit2D hit = Physics2D.Raycast(raycastPosition, Vector2.right, 0.05f);
+        Debug.DrawRay(raycastPosition, Vector2.right, Color.green, 0.05f, false);
+        if (hit.collider != null)
+        {
+            if (!isStarPowered)
+            {
+                if (hit.collider.gameObject.CompareTag("Enemy"))
+                {
+                    if (!isHoping)
+                    {
+                        hopedEnemy = null;
+                        hopedEnemy = hit.collider.gameObject;
+                        animator.SetBool("IsJumping", true);
+                        rb.AddForce(new Vector2(0.0f, hopForce * 2.2f));
+                        isHoping = true;
+                    }
+                }
+            }
+            if (hit.collider.gameObject.CompareTag("Vault"))
+            {
+                if (!isHoping)
+                {
+                    animator.SetBool("IsJumping", true);
+                    rb.AddForce(new Vector2(0.0f, hopForce * 2.2f));
+                    isHoping = true;
+                }
+            }
+        }
     }
 
     private void Run()
@@ -195,15 +233,33 @@ public class PlayerMovement : MonoBehaviour
                     if (Input.GetMouseButtonDown(0))
                     {
                         animator.SetBool("IsSpinning", true);
+                        if (hopedEnemy != null)
+                        {
+                            IEnemy iEnemy = hopedEnemy.GetComponent<IEnemy>();
+                            iEnemy.Stomped(killStreak);
+                        }
                         spinJumpCooldownTimer = 1.2f;
-                        rb.AddForce(new Vector2(0.0f, 350));
-                        isHoping = false;
+                        rb.AddForce(new Vector2(0.0f, 150));
+                        jumpTimer = 0.1f;
+                        Debug.Log("A");
+                    }
+                    if (Input.GetMouseButton(0))
+                    {
+                        if (jumpTimer <= 0)
+                        {
+                            Debug.Log("S");
+                            rb.AddForce(new Vector2(0.0f, 150.0f));
+                            isHoping = false;
+                        }
+                        jumpTimer -= Time.deltaTime;
                     }
                     hopCooldown -= Time.deltaTime;
                     if (hopCooldown <= 0.0f)
                     {
                         isHoping = false;
-                        hopCooldown = 1.5f;
+                        animator.SetBool("IsJumping", true);
+                        animator.SetBool("IsRunning", true);
+                        hopCooldown = 0.4f;
                     }
                 }
             }
@@ -289,10 +345,13 @@ public class PlayerMovement : MonoBehaviour
                         {
                             if (direction.y > 0)
                             {
-                                rb.AddForce(new Vector2(0.0f, hopForce * 5f));
+                                if (!isHoping)
+                                {
+                                    rb.AddForce(new Vector2(0.0f, hopForce * 5f));
 
-                                killStreak++;
-                                other.gameObject.GetComponent<IEnemy>().Stomped(killStreak);
+                                    killStreak++;
+                                    other.gameObject.GetComponent<IEnemy>().Stomped(killStreak);
+                                }
                             }
                             else
                             {
@@ -327,8 +386,7 @@ public class PlayerMovement : MonoBehaviour
                         }
                         else
                         {
-                            rb.AddForce(new Vector2(0.0f, hopForce * 3f));
-                            isHoping = true;
+
                         }
                     }
                     else
@@ -428,13 +486,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Pauser"))
         {
+            animator.SetBool("IsJumping", false);
+            animator.SetBool("IsRunning", false);
             GameManager.isScrollingOn = false;
             GameManager.isPausered = true;
-        }
-        else if (other.gameObject.CompareTag("Vault"))
-        {
-            isHoping = true;
-            rb.AddForce(new Vector2(0.0f, hopForce * 3f));
         }
         else if (other.gameObject.CompareTag("Flagpole"))
         {   

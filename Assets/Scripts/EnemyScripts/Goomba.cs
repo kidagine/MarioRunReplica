@@ -18,7 +18,7 @@ public class Goomba : MonoBehaviour, IEnemy
     private bool isInsideMainCamera;
     private bool canMove = true;
     private bool hitOnce;
-    private float runSpeed = 0.8f;
+    private float runSpeed = 0.7f;
 
 
     void Start()
@@ -52,8 +52,8 @@ public class Goomba : MonoBehaviour, IEnemy
     {
         if (!isInsideMainCamera)
         {
-            float distance = Vector2.Distance(transform.position, player.transform.position);
-            if (distance < 3.5f)
+            float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
+            if (distance < 3.8f)
             {
                 isInsideMainCamera = true;
             }
