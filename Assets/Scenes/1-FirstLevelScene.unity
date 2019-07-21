@@ -35031,6 +35031,7 @@ MonoBehaviour:
   playerAnimator: {fileID: 174602536}
   playerRb: {fileID: 1596615748}
   timerText: {fileID: 1382270348}
+  timer: 60
 --- !u!1 &1390344824
 GameObject:
   m_ObjectHideFlags: 0
@@ -35246,11 +35247,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1596615747}
     m_Modifications:
-    - target: {fileID: 4245791102192143526, guid: 5c8fed013f0db0c4b870e8dbdcdfdafc,
-        type: 3}
-      propertyPath: m_Name
-      value: StarParticles
-      objectReference: {fileID: 0}
     - target: {fileID: 4245791102192143523, guid: 5c8fed013f0db0c4b870e8dbdcdfdafc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -35555,6 +35551,11 @@ PrefabInstance:
         type: 3}
       propertyPath: ShapeModule.randomPositionAmount
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4245791102192143526, guid: 5c8fed013f0db0c4b870e8dbdcdfdafc,
+        type: 3}
+      propertyPath: m_Name
+      value: StarParticles
       objectReference: {fileID: 0}
     - target: {fileID: 4245791102192143521, guid: 5c8fed013f0db0c4b870e8dbdcdfdafc,
         type: 3}
@@ -51290,11 +51291,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4245791102192143526, guid: 5c8fed013f0db0c4b870e8dbdcdfdafc,
-        type: 3}
-      propertyPath: m_Name
-      value: Particle System
-      objectReference: {fileID: 0}
     - target: {fileID: 4245791102192143523, guid: 5c8fed013f0db0c4b870e8dbdcdfdafc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -51434,6 +51430,11 @@ PrefabInstance:
         type: 3}
       propertyPath: playOnAwake
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4245791102192143526, guid: 5c8fed013f0db0c4b870e8dbdcdfdafc,
+        type: 3}
+      propertyPath: m_Name
+      value: Particle System
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c8fed013f0db0c4b870e8dbdcdfdafc, type: 3}

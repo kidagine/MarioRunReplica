@@ -42,12 +42,14 @@ public class GameManager : MonoBehaviour
     public static bool isPausered;
     public static bool hasWon;
 
+    private List<GameObject> listLastRepeatedObjects = new List<GameObject>();
     private bool isStartingCutsceneFinished;
     private bool hasCircleMaskReachedMaxScale;
     private bool areUIButtonsDisabled;
     private bool wasStarMusicPlaying;
     private float cooldownStart = 2.0f;
     private float cooldownPlayerRun = 3.0f;
+    private float repeatableOffset = 104.33f;
     private int coinsAmount;
     private int bubblesAmount = 2;
 
@@ -99,6 +101,26 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    public float GetOffset()
+    {
+        return repeatableOffset;
+    }
+
+    public void IncremenentOffset()
+    {
+        repeatableOffset += 104.33f;
+    }
+
+    public List<GameObject> GetLastRepeatedLevel()
+    {
+        return listLastRepeatedObjects;
+    }
+
+    public void SetLastRepeatedLevel(GameObject lastRepeatedObject)
+    {
+        listLastRepeatedObjects.Add(lastRepeatedObject);
     }
 
     public int GetBubblesAmount()

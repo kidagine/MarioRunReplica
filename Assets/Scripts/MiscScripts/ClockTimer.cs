@@ -10,8 +10,7 @@ public class ClockTimer : MonoBehaviour
     [SerializeField] Animator playerAnimator;
     [SerializeField] Rigidbody2D playerRb;
     [SerializeField] Text timerText;
-
-    private int timer = 60;
+    [SerializeField] private int timer;
 
 
     void Start()

@@ -89,6 +89,7 @@
     <Compile Include="Assets\Scripts\MiscScripts\Mushroom.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Pauser.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\PurpleCoin.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\RepeatStage.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\ScrollingBackground.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Sounds.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Star.cs" />
