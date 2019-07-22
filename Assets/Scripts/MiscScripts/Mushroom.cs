@@ -5,17 +5,20 @@ using UnityEngine;
 public class Mushroom : MonoBehaviour
 {
 
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private bool isInsideBlock;
     [SerializeField] private GameObject coin5UpPrefab;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private Rigidbody2D rb;
+    private GameObject player;
     private Vector2 startingPoint;
     private Vector2 targetPoint;
     private Vector2 controlPoint;
     private bool isFacingRight = true;
+    private bool isInsideMainCamera;
     private bool isCollided;
     private float ratio;
-    private float runSpeed = 2.0f;
+    private float runSpeed = 1.35f;
 
 
     void Start()
@@ -24,23 +27,43 @@ public class Mushroom : MonoBehaviour
         startingPoint = new Vector2(transform.position.x, transform.position.y);
         targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 1f);
         controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.0f;
+        if (!isInsideBlock)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+        }
     }
 
     void Update()
     {
-        if (ratio < 1.0f)
+        if (ratio < 1.0f && isInsideBlock)
         {
             LaunchItem();
         }
         else
         {
-            if (isFacingRight)
+            if (isInsideMainCamera)
             {
-                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
+                if (isFacingRight)
+                {
+                    rb.velocity = new Vector2(runSpeed, rb.velocity.y);
+                }
+                else
+                {
+                    rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
+                }
             }
-            else 
+            CheckForPlayerDistance();
+        }
+    }
+
+    private void CheckForPlayerDistance()
+    {
+        if (!isInsideMainCamera)
+        {
+            float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
+            if (distance < 3.8f)
             {
-                rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
+                isInsideMainCamera = true;
             }
         }
     }

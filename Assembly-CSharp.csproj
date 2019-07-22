@@ -70,6 +70,7 @@
     <Compile Include="Assets\2DExtras\2d-extras-master\Assets\Tilemap\Tiles\Rule Tile\Scripts\RuleTile.cs" />
     <Compile Include="Assets\2DExtras\2d-extras-master\Assets\Tilemap\Tiles\Terrain Tile\Scripts\TerrainTile.cs" />
     <Compile Include="Assets\2DExtras\2d-extras-master\Assets\Tilemap\Tiles\Weighted Random Tile\WeightedRandomTile.cs" />
+    <Compile Include="Assets\Scripts\EnemyScripts\BombOmb.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\Goomba.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\IEnemy.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\KoopaTroopa.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Assets\Scripts\MiscScripts\Coin.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Coin1Up.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\DestroyTime.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\Firebar.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Flagpole.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\IntroSceneHandler.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="Assets\Scripts\MiscScripts\RepeatStage.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\ScrollingBackground.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Sounds.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\Spikeball.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Star.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerAnimationEventHandler.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerCheckUp.cs" />

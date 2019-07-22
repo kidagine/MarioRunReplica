@@ -6,7 +6,6 @@ public class RepeatStage : MonoBehaviour
 {
 
     [SerializeField] private bool isRepeatDestroy;
-    [SerializeField] private BoxCollider2D boxCollider;
     [SerializeField] private GameObject grid;
     [SerializeField] private GameObject coins;
     [SerializeField] private GameObject midground;
@@ -16,10 +15,12 @@ public class RepeatStage : MonoBehaviour
     private GameObject firstElement;
     private GameObject secondElement;
     private GameObject thirdElement;
+    private GameObject fourthElement;
+    private GameObject fifthElement;
+    private GameObject sixthElement;
     private Vector2 tileMapPosition;
     private Vector2 coinPosition;
     private Vector2 repeatablePosition;
-    private float colliderXOffset;
     private bool hasReachedLastIndex;
 
 
@@ -43,31 +44,30 @@ public class RepeatStage : MonoBehaviour
                     }
                     else if (listInstantiateRepeatableObjects[i] == listInstantiateRepeatableObjects[1])
                     {
-                        coinPosition = new Vector2(listInstantiateRepeatableObjects[1].transform.position.x + gameManager.GetOffset(), listInstantiateRepeatableObjects[1].transform.position.y);
+                        coinPosition = new Vector2(listInstantiateRepeatableObjects[1].transform.position.x + gameManager.GetOffset() - 0.5872f, 0.0f - 0.08513826f);
                         secondElement = listInstantiateRepeatableObjects[i];
                     }
                     else if (listInstantiateRepeatableObjects[i] == listInstantiateRepeatableObjects[2])
                     {
                         repeatablePosition = new Vector2(gameManager.GetOffset(), listInstantiateRepeatableObjects[2].transform.position.y);
                         thirdElement = listInstantiateRepeatableObjects[i];
+                    }
+                    else if (listInstantiateRepeatableObjects[i] == listInstantiateRepeatableObjects[3])
+                    {
+                        fourthElement = listInstantiateRepeatableObjects[i];
+                    }
+                    else if (listInstantiateRepeatableObjects[i] == listInstantiateRepeatableObjects[4])
+                    {
+                        fifthElement = listInstantiateRepeatableObjects[i];
+                    }
+                    else if (listInstantiateRepeatableObjects[i] == listInstantiateRepeatableObjects[5])
+                    {
+                        sixthElement = listInstantiateRepeatableObjects[5];
                         hasReachedLastIndex = true;
                     }
                 }
                 gameManager.IncremenentOffset();
                 StartCoroutine(InstantiateLevel());
-            }
-            else if (isRepeatDestroy)
-            {
-                Debug.Log("1");
-                List<GameObject> listLastRepeatedObjects = gameManager.GetLastRepeatedLevel();
-                for (int i = 0; i < listLastRepeatedObjects.Capacity; i++)
-                {
-                    if (listLastRepeatedObjects[i].gameObject.name.Contains("Clone"))
-                    {
-                        Debug.Log("2");
-                        Destroy(listLastRepeatedObjects[i]);
-                    }
-                }
             }
         }
     }
@@ -75,18 +75,22 @@ public class RepeatStage : MonoBehaviour
     IEnumerator InstantiateLevel()
     {
         GameObject tileMap = Instantiate(firstElement, tileMapPosition, Quaternion.identity);
-        gameManager.SetLastRepeatedLevel(firstElement);
         tileMap.transform.parent = grid.transform;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
         GameObject coins = Instantiate(secondElement, coinPosition, Quaternion.identity);
-        gameManager.SetLastRepeatedLevel(secondElement);
         coins.transform.parent = coins.transform;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
         GameObject repeatable = Instantiate(thirdElement, repeatablePosition, Quaternion.identity);
-        gameManager.SetLastRepeatedLevel(thirdElement);
         repeatable.transform.parent = midground.transform;
-        colliderXOffset += 320;
-        boxCollider.offset = new Vector2(colliderXOffset, boxCollider.offset.y);
+        yield return new WaitForSeconds(0.2f);
+        GameObject breakablePlatforms = Instantiate(fourthElement, coinPosition, Quaternion.identity);
+        breakablePlatforms.transform.parent = midground.transform;
+        yield return new WaitForSeconds(0.2f);
+        GameObject firebars = Instantiate(fifthElement, coinPosition, Quaternion.identity);
+        firebars.transform.parent = midground.transform;
+        yield return new WaitForSeconds(0.2f);
+        GameObject mushrooms = Instantiate(sixthElement, coinPosition, Quaternion.identity);
+        mushrooms.transform.parent = midground.transform;
         yield return null;
     }
 

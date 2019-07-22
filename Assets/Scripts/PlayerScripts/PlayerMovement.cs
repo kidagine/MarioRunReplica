@@ -21,12 +21,11 @@ public class PlayerMovement : MonoBehaviour
     private BoxCollider2D boxCollider;
     private CircleCollider2D circleCollider;
     private readonly float runSpeed = 2.2f;
-    private readonly float jumpForce = 200f;
+    private readonly float jumpForce = 280f;
     private readonly float hopForce = 85.0f;
     private readonly float lowJumpMultiplier = 0.5f;
     private float fallMultiplier = 1.0f;
     private float jumpTimer = 0.08f;
-    private float hitOnceTimer = 0.2f;
     private float walkingLeftTimer = 1.3f;
     private float spinJumpCooldownTimer = 0.0f;
     private float hopCooldown = 0.4f;
@@ -199,7 +198,7 @@ public class PlayerMovement : MonoBehaviour
                         {
                             if (jumpTimer >= 0)
                             {
-                                rb.AddForce(new Vector2(0.0f, 20.0f));
+                                rb.AddForce(new Vector2(0.0f, 30.0f));
                                 jumpTimer -= Time.deltaTime;
                             }
                             else
@@ -391,25 +390,7 @@ public class PlayerMovement : MonoBehaviour
                     }
                     else
                     {
-                        if (!IsPoweredUp)
-                        {
-                            FindObjectOfType<AudioManager>().Play("Death");
-                            FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
-                            FindObjectOfType<AudioManager>().Pause("Jump");
-                            rb.constraints = RigidbodyConstraints2D.FreezeAll;
-                            animator.SetTrigger("Death");
-                        }
-                        else
-                        {
-                            FindObjectOfType<AudioManager>().Play("PowerDown");
-                            isInvunrable = true;
-                            Time.timeScale = 0.0f;
-                            GameManager.isScrollingOn = false;
-                            rb.velocity = new Vector2(0.0f, 0.0f);
-                            IsPoweredUp = false;
-                            LoseCoins();
-                            StartCoroutine(PoweringDown());
-                        }
+                        Hit();
                     }
                 }
                 else
@@ -492,7 +473,7 @@ public class PlayerMovement : MonoBehaviour
             GameManager.isPausered = true;
         }
         else if (other.gameObject.CompareTag("Flagpole"))
-        {   
+        {
             FindObjectOfType<AudioManager>().Play("Win");
             FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
             FindObjectOfType<AudioManager>().Pause("Jump");
@@ -512,6 +493,10 @@ public class PlayerMovement : MonoBehaviour
                 transform.position = new Vector2(transform.position.x + 0.27f, transform.position.y);
             }
         }
+        else if (other.gameObject.CompareTag("Lava"))
+        {
+            Hit();
+        }
         else if (other.gameObject.CompareTag("Death"))
         {
             if (FindObjectOfType<GameManager>().GetBubblesAmount() == 0)
@@ -520,7 +505,6 @@ public class PlayerMovement : MonoBehaviour
                 FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
                 FindObjectOfType<AudioManager>().Pause("Jump");
                 FindObjectOfType<GameManager>().GameOver();
-                Destroy(gameObject);
             }
             else
             {
@@ -547,6 +531,34 @@ public class PlayerMovement : MonoBehaviour
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+    }
+
+    public void Hit()
+    {
+        if (!isInvunrable)
+        {
+            if (!IsPoweredUp)
+            {
+                FindObjectOfType<AudioManager>().Play("Death");
+                FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+                FindObjectOfType<AudioManager>().Pause("Jump");
+                rb.constraints = RigidbodyConstraints2D.FreezeAll;
+                animator.SetTrigger("Death");
+                boxCollider.enabled = false;
+                circleCollider.enabled = false;
+            }
+            else
+            {
+                FindObjectOfType<AudioManager>().Play("PowerDown");
+                isInvunrable = true;
+                Time.timeScale = 0.0f;
+                GameManager.isScrollingOn = false;
+                rb.velocity = new Vector2(0.0f, 0.0f);
+                IsPoweredUp = false;
+                LoseCoins();
+                StartCoroutine(PoweringDown());
+            }
+        }
     }
 
     public void Death()
