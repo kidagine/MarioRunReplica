@@ -7,7 +7,7 @@ public class Spikeball : MonoBehaviour
 
     private Rigidbody2D rb;
     private int rotationSpeed = 100;
-    private int rollSpeed = -2;
+    private float rollSpeed = -1.4f;
 
     void Start()
     {

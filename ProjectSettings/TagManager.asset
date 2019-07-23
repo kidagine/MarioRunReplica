@@ -15,6 +15,7 @@ TagManager:
   - Star
   - Lava
   - Breakable
+  - BombOmb
   layers:
   - Default
   - TransparentFX

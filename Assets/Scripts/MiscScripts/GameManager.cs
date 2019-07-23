@@ -66,14 +66,6 @@ public class GameManager : MonoBehaviour
             if (cooldownStart <= 0)
             {
                 StartCoroutine(ScaleUpCircle());
-                if (hasCircleMaskReachedMaxScale)
-                {
-                    FindObjectOfType<AudioManager>().Play("FirstStageBGM");
-                    playerUI.SetActive(true);
-                    isScrollingOn = true;
-                    isStartingCutsceneFinished = true;
-                    cmvIngameCam.SetActive(false);
-                }
                 cooldownPlayerRun -= Time.deltaTime;
             }
             cooldownStart -= Time.deltaTime;
@@ -96,6 +88,11 @@ public class GameManager : MonoBehaviour
             else
             {
                 hasCircleMaskReachedMaxScale = true;
+                FindObjectOfType<AudioManager>().Play("FirstStageBGM");
+                playerUI.SetActive(true);
+                cmvIngameCam.SetActive(false);
+                isStartingCutsceneFinished = true;
+                isScrollingOn = true;
                 Destroy(blackPanel);
                 Destroy(introStageText);
                 yield return null;
