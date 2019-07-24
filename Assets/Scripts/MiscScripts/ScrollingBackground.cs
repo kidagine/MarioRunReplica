@@ -19,6 +19,8 @@ public class ScrollingBackground : MonoBehaviour
             if (!GameManager.isBubbled)
             {
                 offset = new Vector2(playerMovement.rb.velocity.x / 20, 0.0f);
+                material.mainTextureOffset += offset * Time.deltaTime;
+                transform.position = new Vector2(player.transform.position.x + 0.5f, transform.position.y);
             }
             else
             {
@@ -26,14 +28,14 @@ public class ScrollingBackground : MonoBehaviour
                 if (!bubble.hasReachedStart)
                 {
                     offset = new Vector2(-0.5f, 0.0f);
+                    material.mainTextureOffset += offset * Time.deltaTime;
+                    transform.position = new Vector2(player.transform.position.x + 0.5f, transform.position.y);
                 }
                 else
                 {
                     offset = new Vector2(0.0f, 0.0f);
                 }
             }
-            material.mainTextureOffset += offset * Time.deltaTime;
-            transform.position = new Vector2(player.transform.position.x + 0.5f, transform.position.y);
         }
     }
 

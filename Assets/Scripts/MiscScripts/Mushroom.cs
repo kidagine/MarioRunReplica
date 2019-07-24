@@ -25,8 +25,8 @@ public class Mushroom : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         startingPoint = new Vector2(transform.position.x, transform.position.y);
-        targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 1f);
-        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.0f;
+        targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 2f);
+        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.5f;
         if (!isInsideBlock)
         {
             player = GameObject.FindGameObjectWithTag("Player");

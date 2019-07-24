@@ -10,6 +10,10 @@ public class BombOmb : MonoBehaviour, IEnemy
 
     private Animator animator;
     private Rigidbody2D rb;
+    private Vector2 startingPoint;
+    private Vector2 targetPoint;
+    private Vector2 controlPoint;
+    private float ratio;
     private float runSpeed = 0.7f;
     private float launchForce = 13.0f;
     private bool canMove = true;
@@ -19,12 +23,22 @@ public class BombOmb : MonoBehaviour, IEnemy
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        startingPoint = new Vector2(transform.position.x, transform.position.y);
+        targetPoint = new Vector2(transform.position.x - 0.1f, transform.position.y);
+        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.5f;
         Destroy(gameObject, 3.0f);
-    }
+    }   
 
     void Update()
     {
-        Walk();
+        if (ratio < 1.0f)
+        {
+            LaunchItem();
+        }
+        else
+        {
+            Walk();
+        }
     }
 
     public void Walk()
@@ -41,6 +55,15 @@ public class BombOmb : MonoBehaviour, IEnemy
                 animator.SetBool("IsFalling", false);
             }
         }
+    }
+
+    private void LaunchItem()
+    {
+        ratio += 1.2f * Time.deltaTime;
+
+        Vector3 m1 = Vector3.Lerp(startingPoint, controlPoint, ratio);
+        Vector3 m2 = Vector3.Lerp(controlPoint, targetPoint, ratio);
+        transform.position = Vector3.Lerp(m1, m2, ratio);
     }
 
     public void Stomped(int killStreak)

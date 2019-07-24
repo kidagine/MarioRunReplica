@@ -336,6 +336,10 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(StarPower());
             StartCoroutine(StarCooldown());
         }
+        else if (other.gameObject.CompareTag("Lava"))
+        {
+            Hit();
+        }
         if (other.gameObject.CompareTag("Enemy"))
         {
             if (!isInvunrable)
@@ -544,13 +548,21 @@ public class PlayerMovement : MonoBehaviour
         {
             if (!IsPoweredUp)
             {
-                FindObjectOfType<AudioManager>().Play("Death");
-                FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
-                FindObjectOfType<AudioManager>().Pause("Jump");
-                rb.constraints = RigidbodyConstraints2D.FreezeAll;
-                animator.SetTrigger("Death");
-                boxCollider.enabled = false;
-                circleCollider.enabled = false;
+                if (FindObjectOfType<GameManager>().GetBubblesAmount() == 0)
+                {
+                    FindObjectOfType<AudioManager>().Play("Death");
+                    FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+                    FindObjectOfType<AudioManager>().Pause("Jump");
+                    rb.constraints = RigidbodyConstraints2D.FreezeAll;
+                    animator.SetTrigger("Death");
+                    boxCollider.enabled = false;
+                    circleCollider.enabled = false;
+                }
+                else
+                {
+                    LoseCoins();
+                    FindObjectOfType<GameManager>().CreateBubble();
+                }
             }
             else
             {
@@ -561,7 +573,7 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(0.0f, 0.0f);
                 IsPoweredUp = false;
                 LoseCoins();
-                StartCoroutine(PoweringDown());
+                StartCoroutine(PoweringDown()); 
             }
         }
     }

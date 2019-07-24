@@ -89,6 +89,7 @@
     <Compile Include="Assets\Scripts\MiscScripts\Flagpole.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\IntroSceneHandler.cs" />
+    <Compile Include="Assets\Scripts\MiscScripts\KoopaClownCarAnimationHandler.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\LetterSpacing.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Mushroom.cs" />
     <Compile Include="Assets\Scripts\MiscScripts\Pauser.cs" />

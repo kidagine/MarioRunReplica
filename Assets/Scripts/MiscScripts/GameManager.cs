@@ -165,12 +165,22 @@ public class GameManager : MonoBehaviour
         endStageText.SetActive(true);
     }
 
+    public void SwitchScene()
+    {
+        isScrollingOn = false;
+        isPausered = false;
+        hasWon = false; 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
     public void StartScaleDownCircle()
     {
         playerUIAnimator.SetTrigger("FadeOut");
         whitePanel.SetActive(true);
         whiteCircleMask.SetActive(true);
-        StartCoroutine(ScaleDownCircle());
+        Vector3 centeredPosition = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 0.0f));
+        whiteCircleMask.transform.position = new Vector2(centeredPosition.x, centeredPosition.y);
+        whitePanel.transform.position = new Vector2(centeredPosition.x, centeredPosition.y); StartCoroutine(ScaleDownCircle());
     }
 
     IEnumerator ScaleDownCircle()
@@ -200,8 +210,9 @@ public class GameManager : MonoBehaviour
         playerUIAnimator.SetTrigger("FadeOut");
         bowserMask.SetActive(true);
         bowserPanel.SetActive(true);
-        bowserMask.transform.position = new Vector2(player.transform.position.x + 1, 1.7f);
-        bowserPanel.transform.position = new Vector2(player.transform.position.x + 1, 1.7f);
+        Vector3 centeredPosition = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 0.0f));
+        bowserMask.transform.position = new Vector2(centeredPosition.x, centeredPosition.y);
+        bowserPanel.transform.position = new Vector2(centeredPosition.x, centeredPosition.y);
         gameOverUI.SetActive(true);
         StartCoroutine(ScaleUpBowserEmblem());
     }
@@ -219,7 +230,7 @@ public class GameManager : MonoBehaviour
             {
                 bowserMask.transform.localScale = Vector2.Lerp(startingScale, targetScale, curveAmount);
                 curveAmount = bowserAnimationCurve.Evaluate(ratio);
-                ratio += 0.3f * Time.fixedDeltaTime;
+                ratio += 0.5f * Time.fixedDeltaTime;
                 yield return null;
             }
             else

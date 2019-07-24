@@ -5,6 +5,7 @@ using UnityEngine;
 public class BowserFire : MonoBehaviour
 {
 
+    private GameObject player;
     private Rigidbody2D rb;
     private readonly float fireSpeed = 1.5f;
 
@@ -12,12 +13,16 @@ public class BowserFire : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        Vector3 dir = player.transform.position - transform.position;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         Destroy(gameObject, 3.0f);
     }
 
     void Update()
     {
-        rb.velocity = new Vector2(-fireSpeed, 0.0f);
+        rb.velocity = transform.right * fireSpeed;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

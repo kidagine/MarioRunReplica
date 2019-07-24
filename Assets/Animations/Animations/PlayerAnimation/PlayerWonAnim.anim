@@ -111,14 +111,14 @@ AnimationClip:
       - serializedVersion: 3
         time: 4.733333
         value: {x: 2.3, y: -0.3, z: 0}
-        inSlope: {x: 0.8089888, y: 0, z: 0}
-        outSlope: {x: 0.8089888, y: 0, z: 0}
+        inSlope: {x: 0.79999995, y: 0, z: 0}
+        outSlope: {x: 0.79999995, y: 0, z: 0}
         tangentMode: 0
         weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 4.983333
+        time: 5
         value: {x: 2.6, y: -0.3, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
@@ -216,7 +216,7 @@ AnimationClip:
       value: {fileID: 21300000, guid: 1cbb62a0d1a21a1448e049ac6b7b41f8, type: 3}
     - time: 4.9
       value: {fileID: 21300000, guid: 8083cab184390fc4aa96c33c946b67b1, type: 3}
-    - time: 4.983333
+    - time: 5
       value: {fileID: 21300000, guid: 667543ef21900f140bc2a51164717c85, type: 3}
     attribute: m_Sprite
     path: 
@@ -291,7 +291,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 5
+    m_StopTime: 6
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -403,14 +403,14 @@ AnimationClip:
       - serializedVersion: 3
         time: 4.733333
         value: 2.3
-        inSlope: 0.8089888
-        outSlope: 0.8089888
+        inSlope: 0.79999995
+        outSlope: 0.79999995
         tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 4.983333
+        time: 5
         value: 2.6
         inSlope: 0
         outSlope: 0
@@ -528,7 +528,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 4.983333
+        time: 5
         value: -0.3
         inSlope: 0
         outSlope: 0
@@ -646,7 +646,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 4.983333
+        time: 5
         value: 0
         inSlope: 0
         outSlope: 0
@@ -681,6 +681,13 @@ AnimationClip:
     messageOptions: 0
   - time: 3.5
     functionName: TriggerStartScaleDownCircle
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 6
+    functionName: TriggerSwitchScene
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

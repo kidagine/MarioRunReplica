@@ -47,4 +47,9 @@ public class PlayerAnimationEventHandler : MonoBehaviour
         playerMovement.Death();
     }
 
+    public void TriggerSwitchScene()
+    {
+        FindObjectOfType<GameManager>().SwitchScene();
+    }
+
 }

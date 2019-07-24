@@ -12,9 +12,12 @@ public class ClockTimer : MonoBehaviour
     [SerializeField] Text timerText;
     [SerializeField] private int timer;
 
+    private int defaultTimer;
+
 
     void Start()
     {
+        defaultTimer = timer;
         StartCoroutine(TimerCountdown());
     }
 
@@ -53,6 +56,11 @@ public class ClockTimer : MonoBehaviour
         playerRb.constraints = RigidbodyConstraints2D.FreezeAll;
         playerAnimator.SetTrigger("Death");
         yield return null;
+    }
+
+    public void ResetTimer()
+    {
+        timer = defaultTimer;
     }
 
 }

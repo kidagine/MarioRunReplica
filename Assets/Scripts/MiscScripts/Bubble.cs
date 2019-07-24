@@ -7,6 +7,7 @@ public class Bubble : MonoBehaviour
 {
 
     [HideInInspector] public bool hasReachedStart;
+    private GameObject boundary;
     private GameObject introPanel;
     private GameObject player;
     private Rigidbody2D rb;
@@ -21,6 +22,7 @@ public class Bubble : MonoBehaviour
     
     void Start()
     {
+        boundary = GameObject.Find("BubbleBoundary");
         player = GameObject.Find("Player");
         introPanel = GameObject.Find("BlackPanel");
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
@@ -66,7 +68,7 @@ public class Bubble : MonoBehaviour
 
     private void MoveBubble()
     {
-        if (transform.position.x > - 5.5f)
+        if (transform.position.x > boundary.transform.position.x)
         {
             rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
         }

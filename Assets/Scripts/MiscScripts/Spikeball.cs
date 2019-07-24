@@ -5,6 +5,8 @@ using UnityEngine;
 public class Spikeball : MonoBehaviour
 {
 
+    [SerializeField] private GameObject smokePrefab;
+    
     private Rigidbody2D rb;
     private int rotationSpeed = 100;
     private float rollSpeed = -1.4f;
@@ -25,6 +27,8 @@ public class Spikeball : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Breakable"))
         {
+            FindObjectOfType<AudioManager>().Play("BreakBlock");
+            Instantiate(smokePrefab, other.transform.position, Quaternion.identity);
             Destroy(other.gameObject);
         }
     }

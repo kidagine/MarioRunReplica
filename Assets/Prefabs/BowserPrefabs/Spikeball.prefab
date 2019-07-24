@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: d3c63851bf7dcda4d935a048b0465fcc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -96,6 +96,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50ee3e0b637a628408c84c8444929a00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  smokePrefab: {fileID: 6201612086877286560, guid: a3566f32571980b4f8f555bca73637ff,
+    type: 3}
 --- !u!50 &875524232065178930
 Rigidbody2D:
   serializedVersion: 4
