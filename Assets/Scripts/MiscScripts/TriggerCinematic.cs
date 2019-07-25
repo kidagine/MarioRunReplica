@@ -36,7 +36,6 @@ public class TriggerCinematic : MonoBehaviour
         bowserAnimator.SetBool("IsScreaming", false);
         toSwitchCamera.SetActive(false);
         GameManager.isScrollingOn = true;
-        yield return new WaitForSeconds(0.05f);
         isCameraSwitchOver = true;
         Destroy(gameObject, 0.5f);
         yield return null;

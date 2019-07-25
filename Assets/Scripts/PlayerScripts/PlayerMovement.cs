@@ -85,6 +85,7 @@ public class PlayerMovement : MonoBehaviour
         else if (GameManager.isPausered)
         {
             rb.velocity = new Vector2(0.0f, 0.0f);
+            animator.SetBool("IsJumping", false);
             animator.SetBool("IsRunning", false);
             if (Input.GetMouseButtonDown(0))
             {
@@ -98,7 +99,8 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            rb.velocity = new Vector2(0.0f, 0.0f);
+            rb.velocity = Vector2.zero;
+            animator.SetBool("IsJumping", false);
             animator.SetBool("IsRunning", false);
         }
         CheckVerticalVelocity();
@@ -245,13 +247,11 @@ public class PlayerMovement : MonoBehaviour
                         spinJumpCooldownTimer = 1.2f;
                         rb.AddForce(new Vector2(0.0f, 150));
                         jumpTimer = 0.1f;
-                        Debug.Log("A");
                     }
                     if (Input.GetMouseButton(0))
                     {
                         if (jumpTimer <= 0)
                         {
-                            Debug.Log("S");
                             rb.AddForce(new Vector2(0.0f, 150.0f));
                             isHoping = false;
                         }

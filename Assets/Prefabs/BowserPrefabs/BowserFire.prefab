@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5269228798188483795}
   - component: {fileID: 5269228798188483794}
   - component: {fileID: 5269228798188483793}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: BowserFire
   m_TagString: Lava
   m_Icon: {fileID: 0}

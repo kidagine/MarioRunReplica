@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\EnemyScripts\BombOmb.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\Bowser.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\BowserFire.cs" />
+    <Compile Include="Assets\Scripts\EnemyScripts\BowserSmoke.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\Goomba.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\IEnemy.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\KoopaTroopa.cs" />

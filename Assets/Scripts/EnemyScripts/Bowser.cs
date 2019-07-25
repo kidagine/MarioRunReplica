@@ -7,9 +7,11 @@ public class Bowser : MonoBehaviour
 
     [SerializeField] private TriggerCinematic triggerCinematic;
     [SerializeField] private Animator koopaClownCarAnimator;
+    [SerializeField] private Animator smokeAnimator;
     [SerializeField] private ClockTimer clockTimer;
     [SerializeField] private GameObject bowserCamera;
     [SerializeField] private GameObject player;
+    [SerializeField] private GameObject bowserSmoke;
     [SerializeField] private GameObject smokePrefab;
     [SerializeField] private GameObject firePrefab;
     [SerializeField] private GameObject BombOmbPrefab;
@@ -18,15 +20,17 @@ public class Bowser : MonoBehaviour
     private Animator animator;
     private Rigidbody2D rb;
     private Rigidbody2D playerRb;
+    private Vector3 originPosition;
     private float runSpeed;
     private float offset = 3.1f;
     private float switchPositionCooldown = 5.0f;
     private float attackCooldown = 3.0f;
     private int lastChosenPosition;
-    private int health = 3;
+    private int health = 1;
     private bool isKeepingDistance;
     private bool isChangingPosition;
     private bool isInvunrable;
+    private bool isDead;
 
 
     void Start()
@@ -38,19 +42,25 @@ public class Bowser : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.isScrollingOn && triggerCinematic.isCameraSwitchOver)
+        if (GameManager.isScrollingOn && triggerCinematic.isCameraSwitchOver && !isDead)
         {
             CheckForPlayerDistance();
             FlyRight();
             FloatFly();
             ChooseRandomPosition();
             ChooseRandomAttack();
-            if (health <= 0)
-            {
-                Death();
-            }
+        }
+        else if (GameManager.isScrollingOn)
+        {
+            rb.velocity = Vector2.zero;
+        }
+        if (isDead)
+        {
+            float step = 1.2f * Time.deltaTime;
+            transform.position = originPosition + Random.insideUnitSphere * 0.1f;
         }
     }
+
 
     private void LateUpdate()
     {
@@ -161,7 +171,8 @@ public class Bowser : MonoBehaviour
             if (randomAttack == 0)
             {
                 attackCooldown = 3.0f;
-                animator.SetBool("IsFireBreathing", true);
+                animator.SetBool("IsThrowingBombOmb", true);
+                //animator.SetBool("IsFireBreathing", true);
             }
             else if (randomAttack == 1)
             {
@@ -171,7 +182,8 @@ public class Bowser : MonoBehaviour
             else if (randomAttack == 2)
             {
                 attackCooldown = 3.0f;
-                koopaClownCarAnimator.SetBool("IsShooting", true);
+                animator.SetBool("IsThrowingBombOmb", true);
+                //koopaClownCarAnimator.SetBool("IsShooting", true);
             }
         }
         attackCooldown -= Time.deltaTime;
@@ -192,7 +204,12 @@ public class Bowser : MonoBehaviour
                 isInvunrable = true;
                 health--;
                 Instantiate(smokePrefab, other.transform.position, Quaternion.identity);
-                StartCoroutine(ResetInvunrability());
+                if (health <= 0)
+                {
+                    Death();
+                    originPosition = transform.position;
+                    StartCoroutine(ResetInvunrability());
+                }
                 Destroy(other.gameObject);
             }
         }
@@ -200,10 +217,15 @@ public class Bowser : MonoBehaviour
 
     private void Death()
     {
+        isDead = true;
+        isKeepingDistance = false;
+        bowserSmoke.SetActive(true);
         bowserCamera.SetActive(true);
         animator.SetBool("IsDead", true);
+        smokeAnimator.SetBool("IsBowserDead", true);
+        koopaClownCarAnimator.SetBool("IsHit", true);
+        GameManager.isScrollingOn = false;
         FindObjectOfType<AudioManager>().Play("BowserHit");
-        Debug.Log("dead");
     }
 
     public void PlayAudio(string audioName)
@@ -238,9 +260,51 @@ public class Bowser : MonoBehaviour
     {
         yield return new WaitForSeconds(1.5f);
         animator.SetBool("IsHit", false);
-        koopaClownCarAnimator.SetBool("IsHit", false);
+        //koopaClownCarAnimator.SetBool("IsHit", false);
         isInvunrable = false;
         yield return null;
+    }
+
+    public void DeathLaunch()
+    {
+        FindObjectOfType<AudioManager>().Play("BowserDeath");
+        bowserCamera.SetActive(false);
+        animator.SetBool("IsDead", false);
+        smokeAnimator.SetBool("IsBowserDead", false);
+        koopaClownCarAnimator.SetBool("IsHit", false);
+        StartCoroutine(Launch());
+        StartCoroutine(Rotate());
+    }
+
+    IEnumerator Launch()
+    {
+        yield return new WaitForSeconds(0.2f);
+        float ratio = 0.0f;
+        Vector2 startingPoint = new Vector2(transform.position.x, transform.position.y);
+        Vector2 targetPoint = new Vector2(transform.position.x - 3.0f, transform.position.y - 9f);
+        Vector2 controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 5.0f;
+        while (ratio < 1.0f)
+        {
+            Vector3 m1 = Vector3.Lerp(startingPoint, controlPoint, ratio);
+            Vector3 m2 = Vector3.Lerp(controlPoint, targetPoint, ratio);
+            transform.position = Vector3.Lerp(m1, m2, ratio);
+            ratio += 0.5f * Time.deltaTime;
+            if (ratio >= 1.0f)
+            {
+                FindObjectOfType<GameManager>().PlayerWon();
+                Destroy(gameObject);
+            }
+            yield return null;
+        }
+    }
+
+    IEnumerator Rotate()
+    {
+        while (isDead)
+        {
+            transform.Rotate(0, 0, 15);
+            yield return null;
+        }
     }
 
 }

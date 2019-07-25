@@ -27,8 +27,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject introStageCin;
     [SerializeField] private GameObject endStageCin;
     [SerializeField] private GameObject bubblePrefab;
+    [SerializeField] private GameObject playerCam;
     [SerializeField] private CinemachineVirtualCamera cinemachineEndStageCin;
     [SerializeField] private Animator playerUIAnimator;
+    [SerializeField] private Animator playerAnimator;
     [SerializeField] private Animator bubbleTextAnimator;
     [SerializeField] private AnimationCurve bowserAnimationCurve;
     [SerializeField] private Image pauseImage;
@@ -247,6 +249,26 @@ public class GameManager : MonoBehaviour
         pauseImage.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
         bubbleImage.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
         bubblesText.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+    }
+
+    public void PlayerWon()
+    {
+        StartCoroutine(Won());
+    }
+
+    IEnumerator Won()
+    {
+        FindObjectOfType<AudioManager>().Play("Win");
+        FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
+        FindObjectOfType<AudioManager>().Pause("Jump");
+        yield return new WaitForSeconds(0.3f);
+        playerCam.SetActive(true);
+        yield return new WaitForSeconds(2.5f);
+        playerAnimator.SetTrigger("WonBowser");
+        yield return new WaitForSeconds(3.0f);
+        playerUIAnimator.SetTrigger("FadeOutScene");
+        yield return new WaitForSeconds(1.5f);
+        SwitchScene();
     }
 
     public void Pause()

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 875524232065178943}
   - component: {fileID: 875524232065178930}
   - component: {fileID: 875524232065178942}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Spikeball
   m_TagString: Lava
   m_Icon: {fileID: 0}
