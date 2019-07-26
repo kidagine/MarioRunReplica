@@ -12,9 +12,9 @@ public class BombOmb : MonoBehaviour, IEnemy
     private Rigidbody2D rb;
     private Vector2 startingPoint;
     private Vector2 targetPoint;
-    private Vector2 controlPoint;
+    private Vector2 controlPoint;   
     private float ratio;
-    private float runSpeed = 0.7f;
+    private float runSpeed = 0.6f;
     private float launchForce = 13.0f;
     private bool canMove = true;
 
@@ -24,8 +24,8 @@ public class BombOmb : MonoBehaviour, IEnemy
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         startingPoint = new Vector2(transform.position.x, transform.position.y);
-        targetPoint = new Vector2(transform.position.x - 0.1f, transform.position.y);
-        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.5f;
+        targetPoint = new Vector2(transform.position.x - 0.05f, transform.position.y);
+        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.2f;
         Destroy(gameObject, 3.0f);
     }   
 

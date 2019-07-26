@@ -261,7 +261,7 @@ public class GameManager : MonoBehaviour
         FindObjectOfType<AudioManager>().Play("Win");
         FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
         FindObjectOfType<AudioManager>().Pause("Jump");
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.4f);
         playerCam.SetActive(true);
         yield return new WaitForSeconds(2.5f);
         playerAnimator.SetTrigger("WonBowser");

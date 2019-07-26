@@ -26,7 +26,7 @@ public class Bowser : MonoBehaviour
     private float switchPositionCooldown = 5.0f;
     private float attackCooldown = 3.0f;
     private int lastChosenPosition;
-    private int health = 1;
+    private int health = 3;
     private bool isKeepingDistance;
     private bool isChangingPosition;
     private bool isInvunrable;
@@ -171,8 +171,7 @@ public class Bowser : MonoBehaviour
             if (randomAttack == 0)
             {
                 attackCooldown = 3.0f;
-                animator.SetBool("IsThrowingBombOmb", true);
-                //animator.SetBool("IsFireBreathing", true);
+                animator.SetBool("IsFireBreathing", true);
             }
             else if (randomAttack == 1)
             {
@@ -199,15 +198,19 @@ public class Bowser : MonoBehaviour
                 clockTimer.ResetTimer();
                 FindObjectOfType<AudioManager>().Play("Explosion");
                 FindObjectOfType<AudioManager>().Play("BowserHit");
-                animator.SetBool("IsHit", true);
-                koopaClownCarAnimator.SetBool("IsHit", true);
                 isInvunrable = true;
                 health--;
                 Instantiate(smokePrefab, other.transform.position, Quaternion.identity);
                 if (health <= 0)
                 {
+                    Debug.Log("tes");
                     Death();
                     originPosition = transform.position;
+                }
+                else
+                {
+                    animator.SetBool("IsHit", true);
+                    koopaClownCarAnimator.SetBool("IsHit", true);
                     StartCoroutine(ResetInvunrability());
                 }
                 Destroy(other.gameObject);
@@ -243,7 +246,7 @@ public class Bowser : MonoBehaviour
         }
         else if (attackPrefab.name.Equals("Bombomb"))
         {
-            Instantiate(attackPrefab, new Vector2(transform.position.x - 0.15f, transform.position.y + 0.26f), Quaternion.identity);
+            Instantiate(attackPrefab, new Vector2(transform.position.x - 0.5f, transform.position.y + 0.26f), Quaternion.identity);
             FindObjectOfType<AudioManager>().Play("Throw");
             animator.SetBool("IsThrowingBombOmb", false);
         }
@@ -260,7 +263,7 @@ public class Bowser : MonoBehaviour
     {
         yield return new WaitForSeconds(1.5f);
         animator.SetBool("IsHit", false);
-        //koopaClownCarAnimator.SetBool("IsHit", false);
+        koopaClownCarAnimator.SetBool("IsHit", false);
         isInvunrable = false;
         yield return null;
     }
