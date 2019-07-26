@@ -31,7 +31,8 @@ public class Bowser : MonoBehaviour
     private bool isChangingPosition;
     private bool isInvunrable;
     private bool isDead;
-
+    private bool isAttacking;
+    
 
     void Start()
     {
@@ -78,10 +79,11 @@ public class Bowser : MonoBehaviour
 
     private void FloatFly()
     {
-        //if (!isChangingPosition  && switchPositionCooldown >= 0.0f)
-        //{
-        //    transform.position = transform.right * Mathf.Sin(Time.deltaTime * 1) * 0.2f;
-        //}
+        if (!isChangingPosition && switchPositionCooldown >= 0.0f && isKeepingDistance && !isAttacking)
+        {
+            //originPosition.y += Mathf.Sin(Time.time * 1) * 0.01f;
+            //transform.position = originPosition;
+        }
     }
 
     private void CheckForPlayerDistance()
@@ -104,10 +106,10 @@ public class Bowser : MonoBehaviour
     {
         if (switchPositionCooldown < 0.0f && !isChangingPosition)
         {
-            float positionYOne = -0.2f;
-            float positionYTwo = 1.3f;
-            float positionYThree = 2.8f;
-            float positionYFour = 4.3f;
+            float positionYOne = -0.6f;
+            float positionYTwo = 0.9f;
+            float positionYThree = 2.4f;
+            float positionYFour = 3.3f;
             int randomPosition = Random.Range(0, 4);
             if (lastChosenPosition != randomPosition)
             {
@@ -156,6 +158,7 @@ public class Bowser : MonoBehaviour
             }
             else
             {
+                originPosition = transform.position;
                 transform.position = positionToMoveTo;
                 switchPositionCooldown = 5.0f;
                 isChangingPosition = false;
@@ -181,8 +184,7 @@ public class Bowser : MonoBehaviour
             else if (randomAttack == 2)
             {
                 attackCooldown = 3.0f;
-                animator.SetBool("IsThrowingBombOmb", true);
-                //koopaClownCarAnimator.SetBool("IsShooting", true);
+                koopaClownCarAnimator.SetBool("IsShooting", true);
             }
         }
         attackCooldown -= Time.deltaTime;
@@ -246,7 +248,7 @@ public class Bowser : MonoBehaviour
         }
         else if (attackPrefab.name.Equals("Bombomb"))
         {
-            Instantiate(attackPrefab, new Vector2(transform.position.x - 0.5f, transform.position.y + 0.26f), Quaternion.identity);
+            Instantiate(attackPrefab, new Vector2(transform.position.x - 0.1f, transform.position.y + 0.25f), Quaternion.identity);
             FindObjectOfType<AudioManager>().Play("Throw");
             animator.SetBool("IsThrowingBombOmb", false);
         }
@@ -257,6 +259,7 @@ public class Bowser : MonoBehaviour
             FindObjectOfType<AudioManager>().Play("Explosion");
             koopaClownCarAnimator.SetBool("IsShooting", false);
         }
+        isAttacking = false;
     }
 
     IEnumerator ResetInvunrability()

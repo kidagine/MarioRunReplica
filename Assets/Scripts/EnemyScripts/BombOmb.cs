@@ -8,6 +8,7 @@ public class BombOmb : MonoBehaviour, IEnemy
     [SerializeField] private GameObject impactEffectPrefab;
     [HideInInspector] public bool isHit;
 
+    private GameObject player;
     private Animator animator;
     private Rigidbody2D rb;
     private Vector2 startingPoint;
@@ -25,7 +26,8 @@ public class BombOmb : MonoBehaviour, IEnemy
         rb = GetComponent<Rigidbody2D>();
         startingPoint = new Vector2(transform.position.x, transform.position.y);
         targetPoint = new Vector2(transform.position.x - 0.05f, transform.position.y);
-        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.2f;
+        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 1.5f;
+        player = GameObject.FindGameObjectWithTag("Player");
         Destroy(gameObject, 3.0f);
     }   
 
@@ -57,9 +59,18 @@ public class BombOmb : MonoBehaviour, IEnemy
         }
     }
 
+    private void CheckForPlayerDistance()
+    {
+        float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
+        if (distance > 3.8f)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void LaunchItem()
     {
-        ratio += 1.2f * Time.deltaTime;
+        ratio += 1.5f * Time.deltaTime;
 
         Vector3 m1 = Vector3.Lerp(startingPoint, controlPoint, ratio);
         Vector3 m2 = Vector3.Lerp(controlPoint, targetPoint, ratio);
@@ -73,7 +84,7 @@ public class BombOmb : MonoBehaviour, IEnemy
         Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
         canMove = false;
         isHit = true;
-        rb.velocity = new Vector2(launchForce, 0.0f);
+        rb.velocity = new Vector2(launchForce, 3.0f);
     }
 
     public void Hit(int killstreak)

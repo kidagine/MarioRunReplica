@@ -18,19 +18,20 @@ public class Mushroom : MonoBehaviour
     private bool isInsideMainCamera;
     private bool isCollided;
     private float ratio;
-    private float runSpeed = 1.35f;
+    private float runSpeed = 1.4f;
 
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         startingPoint = new Vector2(transform.position.x, transform.position.y);
-        targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 2f);
+        targetPoint = new Vector2(transform.position.x + 2.6f, transform.position.y - 2f);
         controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.5f;
         if (!isInsideBlock)
         {
             player = GameObject.FindGameObjectWithTag("Player");
         }
+        Destroy(gameObject, 10.0f);
     }
 
     void Update()

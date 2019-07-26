@@ -99,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            rb.velocity = Vector2.zero;
+            rb.velocity = new Vector2(0.0f, rb.velocity.y);
             animator.SetBool("IsJumping", false);
             animator.SetBool("IsRunning", false);
         }

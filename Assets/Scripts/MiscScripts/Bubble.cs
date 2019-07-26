@@ -59,6 +59,7 @@ public class Bubble : MonoBehaviour
             if (Input.GetMouseButtonDown(0) && transform.position.y > bottomYPosition)
             {
                 GameManager.isBubbled = false;
+                Debug.Log("s");
                 FindObjectOfType<GameManager>().DecrementBubbles(1);
                 player.transform.parent = null;
                 Destroy(gameObject);
