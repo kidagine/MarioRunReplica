@@ -62,7 +62,7 @@ public class BombOmb : MonoBehaviour, IEnemy
     private void CheckForPlayerDistance()
     {
         float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
-        if (distance > 3.8f)
+        if (distance > 5.0f)
         {
             Destroy(gameObject);
         }

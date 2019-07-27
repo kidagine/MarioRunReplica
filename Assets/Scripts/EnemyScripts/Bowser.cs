@@ -21,18 +21,22 @@ public class Bowser : MonoBehaviour
     private Rigidbody2D rb;
     private Rigidbody2D playerRb;
     private Vector3 originPosition;
-    private float runSpeed;
+    private Vector3 floatPosition;
+    private List<int> attackList = new List<int>();
+    private float runSpeed = 5.0f;
     private float offset = 3.1f;
     private float switchPositionCooldown = 5.0f;
     private float attackCooldown = 3.0f;
-    private int lastChosenPosition;
+    private float timeToReachPlayer;
     private int health = 3;
     private bool isKeepingDistance;
     private bool isChangingPosition;
     private bool isInvunrable;
     private bool isDead;
     private bool isAttacking;
-    
+    private bool isFarFromPlayer;
+    private bool wasHit;
+
 
     void Start()
     {
@@ -43,46 +47,51 @@ public class Bowser : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.isScrollingOn && triggerCinematic.isCameraSwitchOver && !isDead)
+        if (GameManager.isScrollingOn && !isFarFromPlayer && triggerCinematic.isCameraSwitchOver && !isDead)
         {
             CheckForPlayerDistance();
-            FlyRight();
-            FloatFly();
             ChooseRandomPosition();
             ChooseRandomAttack();
+            FloatFly();
         }
         else if (GameManager.isScrollingOn)
         {
             rb.velocity = Vector2.zero;
         }
+
         if (isDead)
         {
             float step = 1.2f * Time.deltaTime;
             transform.position = originPosition + Random.insideUnitSphere * 0.1f;
+        }
+
+        if (GameManager.isBubbled)
+        {
+            isFarFromPlayer = true;
+        }
+        if (!GameManager.isBubbled && isFarFromPlayer)
+        {
+            ReachPlayer();
         }
     }
 
 
     private void LateUpdate()
     {
-        if (isKeepingDistance)
+        if (!isFarFromPlayer && isKeepingDistance)
         {
             float targetXPosition = player.transform.position.x + offset;
             transform.position = new Vector2(targetXPosition, transform.position.y);
         }
     }
 
-    private void FlyRight()
-    {
-        rb.velocity = new Vector2(runSpeed, rb.velocity.y);
-    }
-
     private void FloatFly()
     {
-        if (!isChangingPosition && switchPositionCooldown >= 0.0f && isKeepingDistance && !isAttacking)
+        if (switchPositionCooldown >= 0.0f && isKeepingDistance)
         {
-            //originPosition.y += Mathf.Sin(Time.time * 1) * 0.01f;
-            //transform.position = originPosition;
+            floatPosition = transform.position;
+            floatPosition.y += Mathf.Sin(Time.time * 3.0f) * 0.03f;
+            transform.position = floatPosition;
         }
     }
 
@@ -97,7 +106,7 @@ public class Bowser : MonoBehaviour
             }
             else
             {
-                runSpeed = 5.0f;
+                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
             }
         }
     }
@@ -111,32 +120,28 @@ public class Bowser : MonoBehaviour
             float positionYThree = 2.4f;
             float positionYFour = 3.3f;
             int randomPosition = Random.Range(0, 4);
-            if (lastChosenPosition != randomPosition)
+            if (randomPosition != transform.position.y)
             {
                 FindObjectOfType<AudioManager>().Play("TroopaClownCarWoosh");
             }
 
             if (randomPosition == 0)
             {
-                lastChosenPosition = 0;
                 Vector2 targetPosition = new Vector2(transform.position.x, positionYOne);
                 StartCoroutine(MoveToPosition(targetPosition));
             }
             else if (randomPosition == 1)
             {
-                lastChosenPosition = 1;
                 Vector2 targetPosition = new Vector2(transform.position.x, positionYTwo);
                 StartCoroutine(MoveToPosition(targetPosition));
             }
             else if (randomPosition == 2)
             {
-                lastChosenPosition = 2;
                 Vector2 targetPosition = new Vector2(transform.position.x, positionYThree);
                 StartCoroutine(MoveToPosition(targetPosition));
             }
             else
             {
-                lastChosenPosition = 3;
                 Vector2 targetPosition = new Vector2(transform.position.x, positionYFour);
                 StartCoroutine(MoveToPosition(targetPosition));
             }
@@ -205,7 +210,6 @@ public class Bowser : MonoBehaviour
                 Instantiate(smokePrefab, other.transform.position, Quaternion.identity);
                 if (health <= 0)
                 {
-                    Debug.Log("tes");
                     Death();
                     originPosition = transform.position;
                 }
@@ -268,6 +272,7 @@ public class Bowser : MonoBehaviour
         animator.SetBool("IsHit", false);
         koopaClownCarAnimator.SetBool("IsHit", false);
         isInvunrable = false;
+        wasHit = true;
         yield return null;
     }
 
@@ -310,6 +315,25 @@ public class Bowser : MonoBehaviour
         {
             transform.Rotate(0, 0, 15);
             yield return null;
+        }
+    }
+
+    private void ReachPlayer()
+    {
+        timeToReachPlayer += Time.deltaTime / 1f;
+        transform.position = Vector3.Lerp(transform.position, new Vector2(player.transform.position.x + offset, transform.position.y), timeToReachPlayer);
+        if (Mathf.Approximately(transform.position.x, player.transform.position.x + offset))
+        {
+            timeToReachPlayer = 0.0f;
+            isFarFromPlayer = false;
+        }
+    }
+
+    private void AddToAttackList(int[] list)
+    {
+        for (int i = 0; i < attackList.Capacity; i++)
+        {
+            attackList.Add(list[i]);
         }
     }
 

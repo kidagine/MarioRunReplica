@@ -513,7 +513,10 @@ public class PlayerMovement : MonoBehaviour
                 FindObjectOfType<AudioManager>().Play("Death");
                 FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
                 FindObjectOfType<AudioManager>().Pause("Jump");
-                FindObjectOfType<GameManager>().GameOver();
+                rb.constraints = RigidbodyConstraints2D.FreezeAll;
+                animator.SetTrigger("Death");
+                boxCollider.enabled = false;
+                circleCollider.enabled = false;
             }
             else
             {

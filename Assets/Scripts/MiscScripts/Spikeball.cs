@@ -8,7 +8,7 @@ public class Spikeball : MonoBehaviour
     [SerializeField] private GameObject smokePrefab;
     
     private Rigidbody2D rb;
-    private int rotationSpeed = 100;
+    private int rotationSpeed = 200;
     private float rollSpeed = -1.4f;
 
     void Start()
