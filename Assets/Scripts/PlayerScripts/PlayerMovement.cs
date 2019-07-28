@@ -342,7 +342,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Enemy"))
         {
-            if (!isInvunrable)
+            if (!isInvunrable || !GameManager.isScrollingOn)
             {
                 Vector2 direction = transform.position - other.transform.position;
                 if (!isStarPowered)
@@ -547,7 +547,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Hit()
     {
-        if (!isInvunrable)
+        if (!isInvunrable || !GameManager.isScrollingOn)
         {
             if (!IsPoweredUp)
             {

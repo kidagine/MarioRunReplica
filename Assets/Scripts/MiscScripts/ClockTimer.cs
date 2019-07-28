@@ -6,17 +6,20 @@ using UnityEngine.UI;
 public class ClockTimer : MonoBehaviour
 {
 
-    [SerializeField] Animator animator;
-    [SerializeField] Animator playerAnimator;
-    [SerializeField] Rigidbody2D playerRb;
-    [SerializeField] Text timerText;
+    [SerializeField] private Animator animator;
+    [SerializeField] private Animator playerAnimator;
+    [SerializeField] private Rigidbody2D playerRb;
+    [SerializeField] private GameObject timeOut;
+    [SerializeField] private Text timerText;
     [SerializeField] private int timer;
 
+    private Text timeOutText;
     private int defaultTimer;
 
 
     void Start()
     {
+        timeOutText = timeOut.GetComponent<Text>();
         defaultTimer = timer;
         StartCoroutine(TimerCountdown());
     }
@@ -43,6 +46,17 @@ public class ClockTimer : MonoBehaviour
             {
                 timer--;
                 timerText.text = timer.ToString();
+                if (timer <= 5)
+                {
+                    FindObjectOfType<AudioManager>().Play("Kick");
+                    timeOut.SetActive(true);
+                    timeOutText.text = timer.ToString();
+                    if (timer <= 0)
+                    {
+                        timeOutText.text = "TIME'S OUT";
+                        Destroy(timeOut, 0.7f);
+                    }
+                }
                 yield return new WaitForSeconds(1);
             }
             else

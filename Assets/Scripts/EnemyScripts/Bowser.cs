@@ -14,20 +14,22 @@ public class Bowser : MonoBehaviour
     [SerializeField] private GameObject bowserSmoke;
     [SerializeField] private GameObject smokePrefab;
     [SerializeField] private GameObject firePrefab;
-    [SerializeField] private GameObject BombOmbPrefab;
-    [SerializeField] private GameObject SpikeballPrefab;
+    [SerializeField] private GameObject bombOmbPrefab;
+    [SerializeField] private GameObject spikeballPrefab;
+    [SerializeField] private GameObject bigSpikeballPrefab;
 
     private Animator animator;
     private Rigidbody2D rb;
     private Rigidbody2D playerRb;
     private Vector3 originPosition;
     private Vector3 floatPosition;
-    private List<int> attackList = new List<int>();
+    private List<int> attackPattern = new List<int>();
     private float runSpeed = 5.0f;
     private float offset = 3.1f;
-    private float switchPositionCooldown = 5.0f;
-    private float attackCooldown = 3.0f;
+    private float switchPositionCooldown = 3.0f;
     private float timeToReachPlayer;
+    private int lastChosenPosition;
+    private int lastChosenAttack;
     private int health = 3;
     private bool isKeepingDistance;
     private bool isChangingPosition;
@@ -35,7 +37,15 @@ public class Bowser : MonoBehaviour
     private bool isDead;
     private bool isAttacking;
     private bool isFarFromPlayer;
+    private bool hasMovedOnce;
+
+    //Attack Pattern variables
     private bool wasHit;
+    private bool isRaged;
+    private bool hasAttackedOnce;
+    private bool hasOneHealth;
+    private bool hasThrownBigSpikeballOnce;
+    private bool hasReachedEndOfAttackPattern;
 
 
     void Start()
@@ -47,11 +57,11 @@ public class Bowser : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.isScrollingOn && !isFarFromPlayer && triggerCinematic.isCameraSwitchOver && !isDead)
+        if (GameManager.isScrollingOn && triggerCinematic.isCameraSwitchOver && !isFarFromPlayer && !isDead)
         {
             CheckForPlayerDistance();
-            ChooseRandomPosition();
             ChooseRandomAttack();
+            ChooseRandomPosition();
             FloatFly();
         }
         else if (GameManager.isScrollingOn)
@@ -87,10 +97,10 @@ public class Bowser : MonoBehaviour
 
     private void FloatFly()
     {
-        if (switchPositionCooldown >= 0.0f && isKeepingDistance)
+        if (isKeepingDistance)
         {
             floatPosition = transform.position;
-            floatPosition.y += Mathf.Sin(Time.time * 3.0f) * 0.03f;
+            floatPosition.y += Mathf.Sin(Time.time * 2.0f) * 0.005f;
             transform.position = floatPosition;
         }
     }
@@ -119,29 +129,83 @@ public class Bowser : MonoBehaviour
             float positionYTwo = 0.9f;
             float positionYThree = 2.4f;
             float positionYFour = 3.3f;
-            int randomPosition = Random.Range(0, 4);
-            if (randomPosition != transform.position.y)
+            int randomPosition = 0;
+            FindObjectOfType<AudioManager>().Play("TroopaClownCarWoosh");
+            if (!hasMovedOnce)
             {
-                FindObjectOfType<AudioManager>().Play("TroopaClownCarWoosh");
+                hasMovedOnce = true;
+                int chooseRandomPosition = Random.Range(0, 6);
+                if (chooseRandomPosition >= 1)
+                {
+                    randomPosition = 0;
+                }
+                else if (chooseRandomPosition >= 3 && chooseRandomPosition < 1)
+                {
+                    randomPosition = 2;
+                }
+                else
+                {
+                    randomPosition = 3;
+                }
+            }
+            else if (lastChosenPosition == 0)
+            {
+                randomPosition = 1;
+            }
+            else if (lastChosenPosition == 1)
+            {
+                int chooseRandomPosition = Random.Range(0, 11);
+                if (chooseRandomPosition > 8)
+                {
+                    randomPosition = 0;
+                }
+                else
+                {
+                    randomPosition = 2;
+                }
+            }
+            else if (lastChosenPosition == 2)
+            {
+                int chooseRandomPosition = Random.Range(0, 11);
+                if (chooseRandomPosition > 8)
+                {
+                    randomPosition = 1;
+                }
+                else
+                {
+                    randomPosition = 3;
+                }
+            }
+            else if (lastChosenPosition == 3)
+            {
+                randomPosition = 2;
+            }
+            else
+            {
+                randomPosition = Random.Range(0, 4);
             }
 
             if (randomPosition == 0)
             {
+                lastChosenPosition = 0;
                 Vector2 targetPosition = new Vector2(transform.position.x, positionYOne);
                 StartCoroutine(MoveToPosition(targetPosition));
             }
             else if (randomPosition == 1)
             {
+                lastChosenPosition = 1;
                 Vector2 targetPosition = new Vector2(transform.position.x, positionYTwo);
                 StartCoroutine(MoveToPosition(targetPosition));
             }
             else if (randomPosition == 2)
             {
+                lastChosenPosition = 2;
                 Vector2 targetPosition = new Vector2(transform.position.x, positionYThree);
                 StartCoroutine(MoveToPosition(targetPosition));
             }
-            else
+            else if (randomPosition == 3)
             {
+                lastChosenPosition = 3;
                 Vector2 targetPosition = new Vector2(transform.position.x, positionYFour);
                 StartCoroutine(MoveToPosition(targetPosition));
             }
@@ -158,14 +222,14 @@ public class Bowser : MonoBehaviour
             if (ratio <= 1.0f)
             {
                 transform.position = Vector2.Lerp(transform.position, positionToMoveTo, ratio);
-                ratio += 1.0f * Time.deltaTime;
+                ratio +=Time.deltaTime;
                 yield return null;
             }
             else
             {
                 originPosition = transform.position;
                 transform.position = positionToMoveTo;
-                switchPositionCooldown = 5.0f;
+                switchPositionCooldown = 3.0f;
                 isChangingPosition = false;
             }
         }
@@ -173,26 +237,102 @@ public class Bowser : MonoBehaviour
 
     private void ChooseRandomAttack()
     {
-        if (attackCooldown < 0.0f)
+        if (!hasReachedEndOfAttackPattern)
         {
-            int randomAttack = Random.Range(0, 3);
-            if (randomAttack == 0)
+            if (wasHit)
             {
-                attackCooldown = 3.0f;
-                animator.SetBool("IsFireBreathing", true);
+                wasHit = false;
+                isRaged = true;
+                attackPattern = new List<int> { 0, 0, 0 };
             }
-            else if (randomAttack == 1)
+            else if (!hasAttackedOnce)
             {
-                attackCooldown = 3.0f;
-                animator.SetBool("IsThrowingBombOmb", true);
+                int randomAttackPattern = Random.Range(0, 2);
+                if (randomAttackPattern == 0)
+                {
+                    attackPattern = new List<int> { 1, 1, 1 };
+                }
+                if (randomAttackPattern == 1)
+                {
+                    attackPattern = new List<int> { 2, 1, 1 };
+                }
+                hasAttackedOnce = true;
             }
-            else if (randomAttack == 2)
+            else if (hasOneHealth)
             {
-                attackCooldown = 3.0f;
-                koopaClownCarAnimator.SetBool("IsShooting", true);
+                int randomAttackPattern = Random.Range(0, 2);
+                if (!hasThrownBigSpikeballOnce)
+                {
+                    if (randomAttackPattern == 0)
+                    {
+                        attackPattern = new List<int> { 2, 1, 1 };
+                    }
+                    if (randomAttackPattern == 1)
+                    {
+                        attackPattern = new List<int> { 2, 1, 2 };
+                    }
+                }
+                else
+                {
+                    if (randomAttackPattern == 0)
+                    {
+                        attackPattern = new List<int> { 0, 2, 1 };
+                    }
+                    if (randomAttackPattern == 1)
+                    {
+                        attackPattern = new List<int> { 0, 1, 1 };
+                    }
+                }
+                hasOneHealth = false;
             }
+            else
+            {
+                int randomAttackPattern = Random.Range(0, 9);
+                if (randomAttackPattern == lastChosenAttack)
+                {
+                    return;
+                }
+                if (randomAttackPattern == 0)
+                {
+                    attackPattern = new List<int> { 0, 2, 1 };
+                }
+                if (randomAttackPattern == 1)
+                {
+                    attackPattern = new List<int> { 0, 1, 1 };
+                }
+                if (randomAttackPattern == 2)
+                {
+                    attackPattern = new List<int> { 1, 1, 0 };
+                }
+                if (randomAttackPattern == 3)
+                {
+                    attackPattern = new List<int> { 1, 1, 1 };
+                }
+                if (randomAttackPattern == 4)
+                {
+                    attackPattern = new List<int> { 1, 1, 2 };
+                }
+                if (randomAttackPattern == 5)
+                {
+                    attackPattern = new List<int> { 2, 0, 1 };
+                }
+                if (randomAttackPattern == 6)
+                {
+                    attackPattern = new List<int> { 2, 0, 2 };
+                }
+                if (randomAttackPattern == 7)
+                {
+                    attackPattern = new List<int> { 2, 1, 1 };
+                }
+                if (randomAttackPattern == 8)
+                {
+                    attackPattern = new List<int> { 2, 1, 2 };
+                }
+                lastChosenAttack = randomAttackPattern; 
+            }
+            hasReachedEndOfAttackPattern = true;
+            StartCoroutine(AttackWithPattern(attackPattern));
         }
-        attackCooldown -= Time.deltaTime;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -203,6 +343,7 @@ public class Bowser : MonoBehaviour
             if (bombOmb.isHit && !isInvunrable)
             {
                 clockTimer.ResetTimer();
+                wasHit = true;
                 FindObjectOfType<AudioManager>().Play("Explosion");
                 FindObjectOfType<AudioManager>().Play("BowserHit");
                 isInvunrable = true;
@@ -213,8 +354,16 @@ public class Bowser : MonoBehaviour
                     Death();
                     originPosition = transform.position;
                 }
+                else if (health == 1)
+                {
+                    hasOneHealth = true;
+                    animator.SetBool("IsHit", true);
+                    koopaClownCarAnimator.SetBool("IsHit", true);
+                    StartCoroutine(ResetInvunrability());
+                }
                 else
                 {
+                    hasAttackedOnce = false;
                     animator.SetBool("IsHit", true);
                     koopaClownCarAnimator.SetBool("IsHit", true);
                     StartCoroutine(ResetInvunrability());
@@ -259,7 +408,14 @@ public class Bowser : MonoBehaviour
         else if (attackPrefab.name.Equals("Spikeball"))
         {
             Instantiate(smokePrefab, new Vector2(transform.position.x - 0.15f, transform.position.y - 0.3f), Quaternion.identity);
-            Instantiate(attackPrefab, new Vector2(transform.position.x, transform.position.y - 1.0f), Quaternion.identity);
+            if (health == 1)
+            {
+                Instantiate(bigSpikeballPrefab, new Vector2(transform.position.x, transform.position.y - 1.0f), Quaternion.identity);
+            }
+            else
+            {
+                Instantiate(attackPrefab, new Vector2(transform.position.x, transform.position.y - 1.0f), Quaternion.identity);
+            }
             FindObjectOfType<AudioManager>().Play("Explosion");
             koopaClownCarAnimator.SetBool("IsShooting", false);
         }
@@ -272,7 +428,6 @@ public class Bowser : MonoBehaviour
         animator.SetBool("IsHit", false);
         koopaClownCarAnimator.SetBool("IsHit", false);
         isInvunrable = false;
-        wasHit = true;
         yield return null;
     }
 
@@ -329,12 +484,38 @@ public class Bowser : MonoBehaviour
         }
     }
 
-    private void AddToAttackList(int[] list)
+    IEnumerator AttackWithPattern(List<int> attackPattern)
     {
-        for (int i = 0; i < attackList.Capacity; i++)
+        foreach (var i in attackPattern)
         {
-            attackList.Add(list[i]);
+            if (wasHit)
+            {
+                yield return null;
+            }
+            else
+            {
+                if (i == 0)
+                {
+                    animator.SetBool("IsFireBreathing", true);
+                    yield return new WaitForSeconds(3.8f);
+                }
+                else if (i == 1)
+                {
+                    animator.SetBool("IsThrowingBombOmb", true);
+                    yield return new WaitForSeconds(3.8f);
+                }
+                else if (i == 2)
+                {
+                    koopaClownCarAnimator.SetBool("IsShooting", true);
+                    yield return new WaitForSeconds(3.8f);
+                }
+            }
         }
+        if (isRaged)
+        {
+            isRaged = false;
+        }
+        hasReachedEndOfAttackPattern = false;        
+        yield return null;
     }
-
 }
