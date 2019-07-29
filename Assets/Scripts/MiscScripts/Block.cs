@@ -5,8 +5,8 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
 
-    [SerializeField] private GameObject breakBlockParticle;
     [SerializeField] private GameObject coinPrefab;
+    [SerializeField] private GameObject brokenBlockPrefab;
     [SerializeField] private Animator animator;
     [SerializeField] private Sprite emptyBlockSprite;
     [SerializeField] private bool isDestructible;
@@ -44,7 +44,7 @@ public class Block : MonoBehaviour
                             if (other.gameObject.GetComponent<PlayerMovement>().IsPoweredUp)
                             {
                                 FindObjectOfType<AudioManager>().Play("BreakBlock");
-                                Instantiate(breakBlockParticle, transform.position, Quaternion.identity);
+                                Instantiate(brokenBlockPrefab, transform.position, Quaternion.identity);
                                 Destroy(gameObject);
                             }
                             else
@@ -93,7 +93,7 @@ public class Block : MonoBehaviour
             if (ratio <= 1.0f)
             {
                 transform.position = Vector2.Lerp(startingPosition, targetPosition, ratio);
-                ratio += 5.0f * Time.fixedDeltaTime;
+                ratio += 7.5f * Time.fixedDeltaTime;
                 yield return null;
             }
             else

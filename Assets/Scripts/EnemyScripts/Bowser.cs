@@ -222,7 +222,7 @@ public class Bowser : MonoBehaviour
             if (ratio <= 1.0f)
             {
                 transform.position = Vector2.Lerp(transform.position, positionToMoveTo, ratio);
-                ratio +=Time.deltaTime;
+                ratio += Time.deltaTime;
                 yield return null;
             }
             else

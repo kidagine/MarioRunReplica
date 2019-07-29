@@ -25,6 +25,7 @@ public class Goomba : MonoBehaviour, IEnemy
     {
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        Physics2D.IgnoreCollision(boxCollider, player.GetComponent<CircleCollider2D>());
     }
 
     void Update()

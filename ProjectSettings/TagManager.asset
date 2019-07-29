@@ -16,6 +16,7 @@ TagManager:
   - Lava
   - Breakable
   - BombOmb
+  - EnemyVault
   layers:
   - Default
   - TransparentFX

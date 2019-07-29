@@ -38,6 +38,7 @@ public class Bubble : MonoBehaviour
 
     private void LateUpdate()
     {
+        PlayerFollowBubble();
         transform.position = Vector3.SmoothDamp(transform.position, new Vector2(transform.position.x, targetYPosition), ref velocity, 1.0f);
         if (transform.position.y >= topYPosition - 0.2f)
         {
@@ -60,7 +61,8 @@ public class Bubble : MonoBehaviour
             {
                 GameManager.isBubbled = false;
                 FindObjectOfType<GameManager>().DecrementBubbles(1);
-                player.transform.parent = null;
+                player.GetComponent<BoxCollider2D>().enabled = true;
+                player.GetComponent<CircleCollider2D>().enabled = true;
                 Destroy(gameObject);
             }
         }
@@ -77,6 +79,11 @@ public class Bubble : MonoBehaviour
             rb.velocity = new Vector2(0.0f, rb.velocity.y);
             hasReachedStart = true;
         }
+    }
+
+    private void PlayerFollowBubble()
+    {
+        player.transform.position = transform.position;
     }
 
 }

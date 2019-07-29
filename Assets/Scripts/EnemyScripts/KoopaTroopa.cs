@@ -34,6 +34,7 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
             theScale.x *= -1;
             transform.localScale = theScale;
         }
+        Physics2D.IgnoreCollision(boxCollider, player.GetComponent<CircleCollider2D>());
     }
 
     void Update()

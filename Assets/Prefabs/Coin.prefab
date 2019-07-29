@@ -98,7 +98,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8cb36da5d3128a43924fa890a3abfa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasCoinPhysics: 1
   isCoinBlock: 0
 --- !u!95 &5906698972157492092
 Animator:
@@ -143,7 +142,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 0.56, y: 0.56}
   m_EdgeRadius: 0
 --- !u!50 &1109936322539902207
 Rigidbody2D:
@@ -190,5 +189,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 0.22, y: 0.28}
   m_EdgeRadius: 0

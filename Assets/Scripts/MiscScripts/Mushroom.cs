@@ -11,55 +11,56 @@ public class Mushroom : MonoBehaviour
 
     private Rigidbody2D rb;
     private GameObject player;
+    private BoxCollider2D boxCollider2D;
     private Vector2 startingPoint;
     private Vector2 targetPoint;
     private Vector2 controlPoint;
     private bool isFacingRight = true;
     private bool isInsideMainCamera;
     private bool isCollided;
-    private float ratio;
-    private float runSpeed = 1.4f;
+    private bool isLanded;
+    private float runSpeed = 1.5f;
 
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        boxCollider2D = GetComponent<BoxCollider2D>();
+        boxCollider2D.enabled = false;
+        StartCoroutine(EnableCollider());
         startingPoint = new Vector2(transform.position.x, transform.position.y);
-        targetPoint = new Vector2(transform.position.x + 2.6f, transform.position.y - 2f);
-        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.5f;
+        targetPoint = new Vector2(transform.position.x + 3.0f, transform.position.y - 1.7f);
+        controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 2.7f;
         if (!isInsideBlock)
         {
             player = GameObject.FindGameObjectWithTag("Player");
+        }
+        else
+        {
+            LaunchItem();
         }
         Destroy(gameObject, 10.0f);
     }
 
     void Update()
     {
-        if (ratio < 1.0f && isInsideBlock)
+        if (isInsideMainCamera || isInsideBlock && isLanded)
         {
-            LaunchItem();
-        }
-        else
-        {
-            if (isInsideMainCamera)
+            if (isFacingRight)
             {
-                if (isFacingRight)
-                {
-                    rb.velocity = new Vector2(runSpeed, rb.velocity.y);
-                }
-                else
-                {
-                    rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
-                }
+                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
             }
-            CheckForPlayerDistance();
+            else
+            {
+                rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
+            }
         }
+        CheckForPlayerDistance();
     }
 
     private void CheckForPlayerDistance()
     {
-        if (!isInsideMainCamera)
+        if (!isInsideMainCamera && !isInsideBlock)
         {
             float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
             if (distance < 3.8f)
@@ -71,11 +72,9 @@ public class Mushroom : MonoBehaviour
 
     private void LaunchItem()
     {
-        ratio += 1.2f * Time.deltaTime;
-
-        Vector3 m1 = Vector3.Lerp(startingPoint, controlPoint, ratio);
-        Vector3 m2 = Vector3.Lerp(controlPoint, targetPoint, ratio);
-        transform.position = Vector3.Lerp(m1, m2, ratio);
+        float xForce = Mathf.Cos(145) * 180;
+        float yForce = Mathf.Sin(90) * 235;
+        rb.AddForce(new Vector2(xForce, yForce));
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -95,6 +94,10 @@ public class Mushroom : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+        else if (other.gameObject.CompareTag("Ground"))
+        {
+            isLanded = true;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -105,5 +108,10 @@ public class Mushroom : MonoBehaviour
         }
     }
 
+    IEnumerator EnableCollider()
+    {
+        yield return new WaitForSeconds(0.5f);
+        boxCollider2D.enabled = true;
+    }
 
 }
