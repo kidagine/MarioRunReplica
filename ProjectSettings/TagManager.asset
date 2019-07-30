@@ -17,6 +17,8 @@ TagManager:
   - Breakable
   - BombOmb
   - EnemyVault
+  - LedgeGrab
+  - Slope
   layers:
   - Default
   - TransparentFX

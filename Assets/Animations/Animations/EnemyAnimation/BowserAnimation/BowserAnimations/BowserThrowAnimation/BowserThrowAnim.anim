@@ -81,7 +81,7 @@ AnimationClip:
   - time: 0.6666667
     functionName: InstantiateAttackPrefab
     data: 
-    objectReferenceParameter: {fileID: 6842509571313718820, guid: 315b1aac494ba1c42bdce370ff37ff57,
+    objectReferenceParameter: {fileID: 3657630459682788503, guid: 315b1aac494ba1c42bdce370ff37ff57,
       type: 3}
     floatParameter: 0
     intParameter: 0

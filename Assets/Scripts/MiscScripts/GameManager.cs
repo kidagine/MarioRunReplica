@@ -163,7 +163,6 @@ public class GameManager : MonoBehaviour
 
     public void CourseCompleted()
     {
-        cinemachineEndStageCin.GetCinemachineComponent<CinemachineFramingTransposer>().m_DeadZoneWidth = 1.0f;
         endStageText.SetActive(true);
     }
 

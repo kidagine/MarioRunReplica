@@ -14,6 +14,7 @@ public class Goomba : MonoBehaviour, IEnemy
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
+    private Vector2 startingPosition;
     private bool isFacingRight = false;
     private bool isInsideMainCamera;
     private bool canMove = true;
@@ -25,6 +26,7 @@ public class Goomba : MonoBehaviour, IEnemy
     {
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        startingPosition = transform.position;
         Physics2D.IgnoreCollision(boxCollider, player.GetComponent<CircleCollider2D>());
     }
 
@@ -47,17 +49,23 @@ public class Goomba : MonoBehaviour, IEnemy
                 rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
             }
         }
+        else if (!isInsideMainCamera)
+        {
+            rb.velocity = Vector2.zero;
+            transform.position = startingPosition;
+        }
     }
 
     private void CheckForPlayerDistance()
     {
-        if (!isInsideMainCamera)
+        float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
+        if (distance < 3.8f)
         {
-            float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
-            if (distance < 3.8f)
-            {
-                isInsideMainCamera = true;
-            }
+            isInsideMainCamera = true;
+        }
+        else if (distance > 5.0f)
+        {
+            isInsideMainCamera = false;
         }
     }
 
@@ -75,10 +83,13 @@ public class Goomba : MonoBehaviour, IEnemy
     public void Hit(int killStreak)
     {
         FindObjectOfType<AudioManager>().Play("Stomp");
+        foreach (Collider2D i in GetComponents<Collider2D>())
+        {
+            i.enabled = false;
+        }
         HandleKillStreak(0, killStreak);
         Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y), Quaternion.identity);
         rb.gravityScale = 0.0f;
-        boxCollider.enabled = false;
         Vector2 startingPoint = new Vector2(transform.position.x, transform.position.y);
         Vector2 targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 3f);
         Vector2 controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 5.0f;
@@ -173,5 +184,18 @@ public class Goomba : MonoBehaviour, IEnemy
         }
     }
 
+    public void IsHopedOn(bool value)
+    {
+        if (value == true)
+        {
+            canMove = false;
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+        else
+        {
+            canMove = true;
+            rb.constraints = RigidbodyConstraints2D.None | RigidbodyConstraints2D.FreezeRotation;
+        }
+    }
 
 }

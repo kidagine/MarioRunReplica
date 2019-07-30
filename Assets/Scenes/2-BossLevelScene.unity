@@ -1892,7 +1892,7 @@ MonoBehaviour:
     type: 3}
   firePrefab: {fileID: 5269228798188483792, guid: 62d8bea9a549eee4083f7a20f929cd93,
     type: 3}
-  bombOmbPrefab: {fileID: 6842509571313718820, guid: 315b1aac494ba1c42bdce370ff37ff57,
+  bombOmbPrefab: {fileID: 3657630459682788503, guid: 315b1aac494ba1c42bdce370ff37ff57,
     type: 3}
   spikeballPrefab: {fileID: 875524232065178941, guid: 8c1040eabed616e4aaff71797d7754f3,
     type: 3}
@@ -52631,7 +52631,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: bccc2fdd46a889343ad53e6c4e943bd4, type: 3}
-    m_FontSize: 36
+    m_FontSize: 32
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 3
@@ -52642,9 +52642,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: '1-1
+  m_Text: '6-4
 
-    Up and Over
+    Bowser''s Bomb-ombing run
 
 '
 --- !u!222 &1080920425
@@ -97957,6 +97957,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1234753606}
     m_Modifications:
+    - target: {fileID: 2955375414795674042, guid: 65d8ca1351613874dac023958bc36d6d,
+        type: 3}
+      propertyPath: m_Name
+      value: BreakablePlatformsRepeat
+      objectReference: {fileID: 0}
     - target: {fileID: 2955375414795674043, guid: 65d8ca1351613874dac023958bc36d6d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -98011,11 +98016,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2955375414795674042, guid: 65d8ca1351613874dac023958bc36d6d,
-        type: 3}
-      propertyPath: m_Name
-      value: BreakablePlatformsRepeat
       objectReference: {fileID: 0}
     - target: {fileID: 2955375414822959346, guid: 65d8ca1351613874dac023958bc36d6d,
         type: 3}

@@ -16,7 +16,8 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
     private CircleCollider2D circleCollider;
-    private float runSpeed = 0.8f;
+    private Vector2 startingPosition;
+    private float runSpeed = 0.7f;
     private int killStreak;
     private bool isSpinning;
     private bool isInsideMainCamera;
@@ -28,6 +29,7 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         circleCollider = GetComponent<CircleCollider2D>();
+        startingPosition = transform.position;
         if (isFacingRight)
         {
             Vector3 theScale = transform.localScale;
@@ -47,14 +49,19 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
     {
         if (canMove && isInsideMainCamera)
         {
-            if (!isFacingRight)
-            {
-                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
-            }
-            else
+            if (isFacingRight)
             {
                 rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
             }
+            else
+            {
+                rb.velocity = new Vector2(runSpeed, rb.velocity.y);
+            }
+        }
+        else if (!isInsideMainCamera)
+        {
+            rb.velocity = Vector2.zero;
+            transform.position = startingPosition;
         }
     }
 
@@ -106,13 +113,14 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
 
     private void CheckForPlayerDistance()
     {
-        if (!isInsideMainCamera)
+        float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
+        if (distance < 3.8f)
         {
-            float distance = Vector2.Distance(new Vector2(transform.position.x, 0.0f), new Vector2(player.transform.position.x, 0.0f));
-            if (distance < 3.8f)
-            {
-                isInsideMainCamera = true;
-            }
+            isInsideMainCamera = true;
+        }
+        else if (distance > 5.0f)
+        {
+            isInsideMainCamera = false;
         }
     }
 
@@ -123,8 +131,10 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
         HandleKillStreak(killstreak);
         Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y), Quaternion.identity);
         rb.gravityScale = 0.0f;
-        boxCollider.enabled = false;
-        circleCollider.enabled = false;
+        foreach (Collider2D i in GetComponents<Collider2D>())
+        {
+            i.enabled = false;
+        }
         Vector2 startingPoint = new Vector2(transform.position.x, transform.position.y);
         Vector2 targetPoint = new Vector2(transform.position.x + 2.5f, transform.position.y - 3f);
         Vector2 controlPoint = startingPoint + (targetPoint - startingPoint) / 2 + Vector2.up * 5.0f;
@@ -180,4 +190,18 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
         }
     }
 
+    public void IsHopedOn(bool value)
+    {
+        if (value == true)
+        {
+            canMove = false;
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+        else
+        {
+            canMove = true;
+            rb.constraints = RigidbodyConstraints2D.None | RigidbodyConstraints2D.FreezeRotation;
+        }
     }
+
+}

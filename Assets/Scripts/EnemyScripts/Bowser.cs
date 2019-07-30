@@ -395,13 +395,13 @@ public class Bowser : MonoBehaviour
     {
         if (attackPrefab.name.Equals("BowserFire"))
         {
-            Instantiate(attackPrefab, new Vector2(transform.position.x - 0.26f, transform.position.y + 0.16f), Quaternion.identity);
+            Instantiate(firePrefab, new Vector2(transform.position.x - 0.26f, transform.position.y + 0.16f), Quaternion.identity);
             FindObjectOfType<AudioManager>().Play("BowserFire");
             animator.SetBool("IsFireBreathing", false);
         }
         else if (attackPrefab.name.Equals("Bombomb"))
         {
-            Instantiate(attackPrefab, new Vector2(transform.position.x - 0.1f, transform.position.y + 0.25f), Quaternion.identity);
+            Instantiate(bombOmbPrefab, new Vector2(transform.position.x - 0.1f, transform.position.y + 0.25f), Quaternion.identity);
             FindObjectOfType<AudioManager>().Play("Throw");
             animator.SetBool("IsThrowingBombOmb", false);
         }
@@ -414,7 +414,7 @@ public class Bowser : MonoBehaviour
             }
             else
             {
-                Instantiate(attackPrefab, new Vector2(transform.position.x, transform.position.y - 1.0f), Quaternion.identity);
+                Instantiate(spikeballPrefab, new Vector2(transform.position.x, transform.position.y - 1.0f), Quaternion.identity);
             }
             FindObjectOfType<AudioManager>().Play("Explosion");
             koopaClownCarAnimator.SetBool("IsShooting", false);

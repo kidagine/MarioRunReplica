@@ -92,4 +92,17 @@ public class BombOmb : MonoBehaviour, IEnemy
         throw new System.NotImplementedException();
     }
 
+    public void IsHopedOn(bool value)
+    {
+        if (value == true)
+        {
+            canMove = false;
+            rb.velocity = Vector2.zero;
+        }
+        else
+        {
+            canMove = true;
+        }
+    }
+
 }
