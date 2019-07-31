@@ -12,14 +12,14 @@ public class Goomba : MonoBehaviour, IEnemy
     [SerializeField] private GameObject coin4UpPrefab;
     [SerializeField] private GameObject player;
 
+    [HideInInspector] public bool isFacingRight = false;
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
     private Vector2 startingPosition;
-    private bool isFacingRight = false;
     private bool isInsideMainCamera;
     private bool canMove = true;
     private bool hitOnce;
-    private float runSpeed = 0.7f;
+    private float runSpeed = 0.75f;
 
 
     void Start()
@@ -48,6 +48,7 @@ public class Goomba : MonoBehaviour, IEnemy
             {
                 rb.velocity = new Vector2(-runSpeed, rb.velocity.y);
             }
+
         }
         else if (!isInsideMainCamera)
         {
@@ -77,6 +78,11 @@ public class Goomba : MonoBehaviour, IEnemy
         Instantiate(impactEffectPrefab, new Vector2(transform.position.x, transform.position.y + 0.05f), Quaternion.identity);
         canMove = false;
         transform.Translate(Vector2.right * 0.0f);
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        foreach (Collider2D i in GetComponents<Collider2D>())
+        {
+            i.enabled = false;
+        }
         Destroy(gameObject, 0.25f);
     }
 

@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     private float spinJumpCooldownTimer = 0.0f;
     private float hopCooldown = 0.4f;
     private int killStreak;
-    private bool isFacingRight = true;
+    [HideInInspector] public bool isFacingRight = true;
     private bool isInvunrable;
     private bool isStarPowered;
     private bool isJumping;
@@ -78,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
                     animator.SetBool("IsBubbled", true);
                     boxCollider.enabled = false;
                     circleCollider.enabled = false;
-                    rb.velocity = new Vector2(0.0f, rb.velocity.y);
+                    rb.velocity = new Vector2(0.0f, 1.0f);
                 }
             }
         }
@@ -243,7 +243,8 @@ public class PlayerMovement : MonoBehaviour
                     isWallInfront = false;
                     isGrabingLedge = false;
                     isJumping = true;
-                    isAirSpinning = false;  
+                    isAirSpinning = false;
+                    isWallSliding = false;
                     jumpTimer = 0.08f;
                     rb.AddForce(new Vector2(0.0f, 5.0f), ForceMode2D.Impulse);
                     Flip();
@@ -340,33 +341,7 @@ public class PlayerMovement : MonoBehaviour
                                 }
                                 else
                                 {
-                                    if (!IsPoweredUp)
-                                    {
-                                        if (FindObjectOfType<GameManager>().GetBubblesAmount() == 0)
-                                        {
-                                            FindObjectOfType<AudioManager>().Play("Death");
-                                            FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
-                                            FindObjectOfType<AudioManager>().Pause("Jump");
-                                            rb.constraints = RigidbodyConstraints2D.FreezeAll;
-                                            animator.SetTrigger("Death");
-                                        }
-                                        else
-                                        {
-                                            LoseCoins();
-                                            FindObjectOfType<GameManager>().CreateBubble();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        FindObjectOfType<AudioManager>().Play("PowerDown");
-                                        isInvunrable = true;
-                                        Time.timeScale = 0.0f;
-                                        GameManager.isScrollingOn = false;
-                                        rb.velocity = new Vector2(0.0f, 0.0f);
-                                        IsPoweredUp = false;
-                                        LoseCoins();
-                                        StartCoroutine(PoweringDown());
-                                    }
+                                    Hit();
                                 }
                             }
                         }
@@ -396,7 +371,6 @@ public class PlayerMovement : MonoBehaviour
         {      
             animator.SetBool("IsWallJumping", false);
             animator.SetBool("IsRunning", false);
-            isWallInfront = true;
             foreach (ContactPoint2D point in other.contacts)
             {
                 if (point.normal.x >= 0.9f)
@@ -415,6 +389,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Wall"))
         {
+            isWallInfront = true;
             if (!isGrabingLedge)
             {
                 if (rb.velocity.y < -0.1)
@@ -521,6 +496,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (!isGrounded)
             {
+                animator.SetBool("IsSliding", true);
                 runSpeed = 3.0f;
                 isSliding = true;
                 StartCoroutine(ResetSlope());
@@ -742,6 +718,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("IsJumping", true);
         animator.SetBool("IsWallSliding", true);
         isGrabingLedge = true;
+        isWallSliding = true;
         rb.velocity = new Vector2(0, 0f);
         rb.gravityScale = 0.0f;
         yield return new WaitForSeconds(0.3f);
@@ -756,17 +733,25 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("IsRunning", true);
         isGrabingLedge = false;
         isWallInfront = false;
+        isWallSliding = false;
     }
 
     IEnumerator ResetSlope()
     {
-        if (isSliding)
+        while (isSliding)
         {
-            yield return new WaitForSeconds(0.3f);
-            runSpeed -= Time.deltaTime * 2;
-            yield return new WaitForSeconds(1.7f);
-            isSliding = false;
-            runSpeed = 2.1f;
+            if (runSpeed > 0.0f)
+            {
+                runSpeed -= Time.deltaTime * 1;
+                yield return null;
+            }
+            else
+            {
+                animator.SetBool("IsSliding", false);
+                isSliding = false;
+                runSpeed = 2.1f;
+                yield return null;
+            }
         }
     }
 

@@ -17,7 +17,7 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
     private BoxCollider2D boxCollider;
     private CircleCollider2D circleCollider;
     private Vector2 startingPosition;
-    private float runSpeed = 0.7f;
+    private float runSpeed = 0.75f;
     private int killStreak;
     private bool isSpinning;
     private bool isInsideMainCamera;
@@ -57,6 +57,7 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
             {
                 rb.velocity = new Vector2(runSpeed, rb.velocity.y);
             }
+
         }
         else if (!isInsideMainCamera)
         {
@@ -79,6 +80,8 @@ public class KoopaTroopa : MonoBehaviour, IEnemy
 
     public void Spin()
     {
+        canMove = true;
+        rb.constraints = RigidbodyConstraints2D.None | RigidbodyConstraints2D.FreezeRotation;
         animator.SetTrigger("Spin");
         canMove = true;
         isSpinning = true;

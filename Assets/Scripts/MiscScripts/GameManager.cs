@@ -96,6 +96,7 @@ public class GameManager : MonoBehaviour
                 isStartingCutsceneFinished = true;
                 isScrollingOn = true;
                 Destroy(blackPanel);
+                Destroy(circleMask);
                 Destroy(introStageText);
                 yield return null;
             }
@@ -257,9 +258,10 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Won()
     {
-        FindObjectOfType<AudioManager>().Play("Win");
+        FindObjectOfType<AudioManager>().Pause("Star");
         FindObjectOfType<AudioManager>().Pause("FirstStageBGM");
         FindObjectOfType<AudioManager>().Pause("Jump");
+        FindObjectOfType<AudioManager>().Play("Win");
         yield return new WaitForSeconds(0.4f);
         playerCam.SetActive(true);
         yield return new WaitForSeconds(2.5f);
